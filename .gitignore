@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Outils d'accompagnement (non versionnés)
+.kilo/

@@ -1,144 +1,73 @@
-# Le Mot Mystère
+﻿# Le Mot Mystère
 
-Un jeu de lettres en React réalisé pour un projet de cours. Le joueur doit
-deviner un mot français en six essais.
+Jeu de lettres en React, projet de cours en binôme.
 
-Le palier visé est le **palier 1 : le jeu**. Le travail est réalisé seul, avec
-l'accord du professeur.
+Palier visé : **palier 1 (le jeu)**.
 
-## Palier 1 : ce qui est fait, ce qui reste
+## Binôme
 
-| Attendu du sujet | État |
+Ethan (ethn924) et Marcel.
+
+## État des paliers
+
+| Palier | État |
 | --- | --- |
-| Page d'accueil (nom, explication, pseudo, bouton) | à faire |
-| Pseudo mémorisé pour les visites suivantes | à faire |
-| Partie à une adresse distincte de l'accueil | fait |
-| Grille de 6 lignes de 5 cases | fait |
-| Le mot mystère est tiré au hasard dans la liste fournie | à faire |
-| Les lettres se tapent au clavier | fait |
-| Retour arrière efface la dernière lettre | fait |
-| Entrée valide une ligne complète | à faire |
-| Chaque lettre prend la bonne couleur après validation | à faire |
-| Victoire et défaite détectées, mot révélé en cas de défaite | à faire |
-| Points affichés, nouvelle partie ou retour à l'accueil | à faire |
-| Logique du jeu dans des fonctions séparées de l'affichage | à faire |
+| Palier 1 : le jeu | Fait |
+| Palier 2 : le dictionnaire | Pas commencé |
+| Palier 3 : le confort de jeu | Pas commencé |
+| Palier 4 : le mot du jour | Pas commencé |
+| Palier 5 : les variantes | Pas commencé |
+| Palier 6 : les quatre grilles | Pas commencé |
 
-## La suite
+## Palier 1, ce qui marche
 
-Ce qu'il me reste à faire pour valider le palier 1 :
+- Accueil avec le nom du jeu, une phrase d’explication, un champ pseudo et un bouton Jouer.
+- Le pseudo est rangé dans `localStorage`, il revient au prochain passage.
+- La partie est sur `/partie`, l’accueil sur `/`.
+- Grille 6 lignes × 5 cases.
+- Mot mystère tiré au hasard dans `src/data/mots-solutions.json` (300 mots).
+- Saisie au clavier, Retour arrière, Entrée pour valider une ligne complète.
+- Couleurs vert / jaune / gris, y compris quand une lettre est en double.
+- Victoire et défaite. En cas de défaite le mot s’affiche.
+- Points : 600 / 500 / 400 / 300 / 200 / 100 / 0.
+- Boutons Rejouer et Accueil à la fin.
 
-1. Tirer le mot mystère au hasard et le valider avec la touche Entrée.
-2. Comparer la proposition avec le mot mystère et afficher les couleurs.
-3. Poser les couleurs à l'écran au moment de la validation.
-4. Détecter la victoire et la défaite, révéler le mot, compter les points.
-5. Créer la page d'accueil avec le pseudo mémorisé.
+La comparaison, les points et l’état de la partie sont dans `src/logique/jeu.js`. Les composants ne font que l’affichage et la saisie.
 
-Je ferai ces étapes dans cet ordre, une à une.
-
-## Organisation du code
-
-```text
-src/
-├── components/       # Éléments réutilisables de l'interface
-│   ├── CaseLettre.jsx
-│   ├── Grille.jsx
-│   └── Ligne.jsx
-├── data/             # Données fournies pour le jeu
-│   └── mots-solutions.json
-├── logique/          # Règles et constantes du jeu
-│   └── jeu.js
-├── pages/            # Écrans accessibles par une adresse
-│   ├── Accueil.jsx
-│   └── Partie.jsx
-├── App.jsx           # Routes de l'application
-├── index.css         # Styles de base
-└── main.jsx          # Point d'entrée React
-```
-
-## Le circuit des composants
-
-**Partie → Grille → Ligne → CaseLettre**
-
-- `Partie` affiche `Grille` et garde la proposition en cours.
-- `Grille` fabrique les 6 lignes (une par essai) et transmet à chacune le
-  mot qu'elle doit afficher.
-- Chaque `Ligne` fabrique les 5 cases (une par lettre).
-- Chaque `CaseLettre` affiche la lettre qu'elle reçoit.
-
-Les données descendent de parent à enfant avec les **props** :
-`Grille` → `Ligne` → `CaseLettre`. À retenir : **la grille répète les lignes,
-la ligne répète les cases, la case affiche**.
-
-## La saisie au clavier
-
-La proposition est un état de `Partie` :
-
-```jsx
-const [proposition, setProposition] = useState("");
-```
-
-**`useEffect`** sert à faire une action en dehors de l'affichage. Ici, on
-demande au navigateur d'appeler `surTouche` à chaque pression de touche :
-
-```jsx
-window.addEventListener("keydown", surTouche);
-```
-
-et, quand on quitte l'écran, on retire l'écouteur.
-
-**La forme « fonction » de `setProposition`.** En donnant une fonction à
-`setProposition`, React lui passe la proposition du moment de la frappe :
-
-```jsx
-setProposition((valeurActuelle) => {
-  if (valeurActuelle.length < LONGUEUR_MOT) {
-    return valeurActuelle + touche;
-  }
-  return valeurActuelle;
-});
-```
-
-## Ce qui m'a posé problème
-
-- **L'état figé dans l'écouteur.** En écrivant
-  `setProposition(proposition + touche)`, une seule lettre s'affichait à
-  l'écran : `proposition` valait encore la chaîne vide. La forme « fonction »
-  de `setProposition` a réglé le problème.
-- **La syntaxe de l'effet.** `useEffect(() => { ... }, [])` : la fonction à
-  exécuter, puis le tableau des dépendances.
-- **Deux écritures pour la même donnée.** Le champ de saisie et le clavier
-  modifiaient tous deux `proposition`. Le champ est passé en lecture seule
-  (`readOnly`) : il affiche la proposition, c'est le clavier qui écrit.
-- **La touche Retour arrière.** `slice(0, -1)` retire la dernière lettre.
-
-## Outils du projet
-
-- React et Vite
-- React Router
-- JavaScript
-- ESLint
-- Git et GitHub
-
-Aucune bibliothèque supplémentaire n'a été ajoutée pour l'instant. Les
-constantes du jeu (`NOMBRE_ESSAIS`, `LONGUEUR_MOT`) sont dans
-`src/logique/jeu.js`.
-
-## Lancer l'application
-
-Depuis le dossier du projet :
+## Lancer le projet
 
 ```sh
 npm install
 npm run dev
 ```
 
-Vite affiche ensuite l'adresse locale à ouvrir dans un navigateur.
-
-## Vérifications disponibles
+Vite affiche une adresse locale (souvent `http://localhost:5173`).
 
 ```sh
 npm run lint
 npm run build
 ```
 
-Le sujet complet est dans `../Le_Mot_Mystere_sujet.pdf`.
+Aucune bibliothèque en plus de React, React Router et Vite.
+
+## Organisation
+
+```text
+src/
+├── components/   Grille, Ligne, CaseLettre
+├── data/         mots-solutions.json
+├── logique/      jeu.js
+├── pages/        Accueil, Partie
+├── App.jsx       routes
+└── main.jsx
+```
+
+## Difficultés
+
+On a galéré un moment avec les lettres en double. Exemple : mot ARBRE, proposition ERRER. Si on colore trop vite, on met trop de jaunes alors qu’il n’y a que deux R et un E. On a fini par faire deux passages : d’abord les verts, ensuite les jaunes avec un tableau `disponibles` où on barre les lettres déjà utilisées.
+
+Autre piège : l’écouteur clavier. Si on oublie `proposition` dans les dépendances du `useEffect`, Entrée valide encore l’ancienne ligne. C’est pour ça que les dépendances sont `[proposition, motMystere, finie]`.
+
+On avait aussi une petite liste de mots cassée (certains n’avaient pas 5 lettres). On l’a remplacée par le JSON fourni, 300 mots.
+
+Les accents : on compare toujours en majuscules sans accents (`normalize("NFD")`), comme demandé dans le sujet.

@@ -1,27 +1,33 @@
-import Ligne from './Ligne.jsx'
-import { NOMBRE_ESSAIS } from '../logique/jeu.js'
+import Ligne from "./Ligne.jsx";
+import { NOMBRE_ESSAIS } from "../logique/jeu.js";
 
-// Grille crée une ligne par essai possible, puis les affiche.
-function Grille({ proposition }) {
-  const lignes = []
-  let motLigne
+// La grille complète : affiche toujours 6 lignes fixes
+function Grille({ lignesValidees, proposition }) {
+  const lignesAffichees = [];
 
   for (let i = 0; i < NOMBRE_ESSAIS; i++) {
-    // Seule la première ligne montre la proposition en cours ;
-    // les autres restent vides tant que leurs essais n'ont pas eu lieu.
-    motLigne = ''
-    if (i === 0) {
-      motLigne = proposition
+    // 1. Les lignes déjà validées avec leurs couleurs
+    if (i < lignesValidees.length) {
+      const ligne = lignesValidees[i];
+      lignesAffichees.push(
+        <Ligne mot={ligne.mot} couleurs={ligne.couleurs} key={i} />
+      );
+    // 2. La ligne en cours de frappe
+    } else if (i === lignesValidees.length) {
+      lignesAffichees.push(
+        <Ligne mot={proposition} couleurs={[]} key={i} />
+      );
+    // 3. Les lignes restantes encore vides
+    } else {
+      lignesAffichees.push(<Ligne mot="" couleurs={[]} key={i} />);
     }
-    // La key aide React à reconnaître chaque ligne ; elle ne compte pas les essais.
-    lignes.push(<Ligne mot={motLigne} key={i} />)
   }
 
   return (
     <div className="grille" role="grid" aria-label="Grille de jeu">
-      {lignes}
+      {lignesAffichees}
     </div>
-  )
+  );
 }
 
-export default Grille
+export default Grille;

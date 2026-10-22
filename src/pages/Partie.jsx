@@ -1,59 +1,146 @@
-import Grille from "../components/Grille.jsx";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { LONGUEUR_MOT, tirerMotAleatoire } from "../logique/jeu.js";
+import Grille from "../components/Grille.jsx";
+import {
+  LONGUEUR_MOT,
+  tirerMotAleatoire,
+  comparer,
+  estGagne,
+  calculerPoints,
+  partieEstFinie,
+  normaliserMot,
+} from "../logique/jeu.js";
 import motsSolutions from "../data/mots-solutions.json";
 
-// Partie affiche la grille : c'est le point de départ de l'écran de jeu.
 function Partie() {
-  // proposition contient les lettres tapées par le joueur, dans l'ordre.
+  // Lettres en cours de saisie par le joueur sur la ligne active
   const [proposition, setProposition] = useState("");
-  const [motMystere] = useState(tirerMotAleatoire(motsSolutions));
+  // Mot mystère tiré au sort au chargement de la partie
+  const [motMystere, setMotMystere] = useState(tirerPremierMot);
+  // Historique des lignes jouées : tableau d'objets { mot, couleurs }
+  const [lignes, setLignes] = useState([]);
 
+  // Calcul de l'état de la partie à partir de la liste des lignes
+  const finie = partieEstFinie(lignes);
+  let gagne = false;
+  if (lignes.length > 0) {
+    const derniereLigne = lignes[lignes.length - 1];
+    gagne = estGagne(derniereLigne.couleurs);
+  }
+  const points = calculerPoints(lignes.length, gagne);
+
+  // Gestion du clavier physique avec keydown
   useEffect(() => {
-    // surTouche est appelée à chaque pression d'une touche.
     function surTouche(event) {
-      const touche = event.key;
-
-      // Retour arrière efface la dernière lettre ; slice(0, -1) garde le reste.
-      if (touche === "Backspace") {
-        setProposition((valeurActuelle) => valeurActuelle.slice(0, -1));
+      // Si la partie est terminée, on ne prend plus les touches
+      if (finie) {
         return;
       }
 
-      // Les raccourcis du navigateur (Ctrl, Cmd) ne font pas partie du jeu.
+      const touche = event.key;
+
+      // Entrée valide la ligne si elle a 5 lettres
+      if (touche === "Enter") {
+        if (proposition.length === LONGUEUR_MOT) {
+          const couleurs = comparer(motMystere, proposition);
+          setLignes(ajouterLigne(proposition, couleurs));
+          setProposition("");
+        }
+        return;
+      }
+
+      // Retour arrière efface la dernière lettre tapée
+      if (touche === "Backspace") {
+        setProposition(retirerDerniereLettre);
+        return;
+      }
+
+      // On ignore les raccourcis navigateur (Ctrl, Alt, Cmd)
       if (event.ctrlKey || event.metaKey || event.altKey) {
         return;
       }
-      // Seules les lettres sont acceptées : ni espace, ni Entrée, ni flèches.
-      if (touche.length !== 1 || touche === " ") {
+
+      // On vérifie que c'est bien une lettre de l'alphabet
+      const lettre = normaliserMot(touche);
+      if (lettre.length !== 1) {
         return;
       }
 
-      // setProposition reçoit une fonction pour lire la valeur à jour.
-      setProposition((valeurActuelle) => {
-        if (valeurActuelle.length < LONGUEUR_MOT) {
-          return valeurActuelle + touche;
-        }
-        return valeurActuelle;
-      });
+      setProposition(ajouterLettre(lettre));
     }
 
     window.addEventListener("keydown", surTouche);
+    // Nettoyage de l'écouteur d'événement à la fermeture du composant
+    return () => window.removeEventListener("keydown", surTouche);
+  }, [proposition, motMystere, finie]);
 
-    // Nettoyage : l'écouteur est retiré quand on quitte l'écran.
-    return () => {
-      window.removeEventListener("keydown", surTouche);
-    };
-  }, []);
+  // Relance une nouvelle partie avec un nouveau mot
+  function rejouer() {
+    setProposition("");
+    setLignes([]);
+    setMotMystere(tirerMotAleatoire(motsSolutions));
+  }
+
+  // Écran affiché uniquement quand la partie est gagnée ou perdue
+  let ecranFin = null;
+  if (finie) {
+    let texteResultat = "Bravo, tu as trouvé le mot !";
+    if (!gagne) {
+      texteResultat = "Perdu. Le mot était : " + normaliserMot(motMystere);
+    }
+    ecranFin = (
+      <section className="ecran-fin">
+        <p>{texteResultat}</p>
+        <p>Points : {points}</p>
+        <button type="button" onClick={rejouer}>
+          Rejouer
+        </button>
+        <Link to="/">Accueil</Link>
+      </section>
+    );
+  }
 
   return (
-    <main>
-      <h1>Partie</h1>
-      <p>Mot mystère : {motMystere}</p>
-      <input type="text" value={proposition} readOnly />
-      <Grille proposition={proposition} />
+    <main className="page">
+      <h1>Le Mot Mystère</h1>
+      <Grille lignesValidees={lignes} proposition={proposition} />
+      {ecranFin}
     </main>
   );
+}
+
+function tirerPremierMot() {
+  return tirerMotAleatoire(motsSolutions);
+}
+
+// Ajoute la nouvelle ligne jouée à l'historique sans modifier l'ancien tableau
+function ajouterLigne(mot, couleurs) {
+  return function copierAvecNouvelleLigne(lignesActuelles) {
+    const nouvellesLignes = [];
+    for (let i = 0; i < lignesActuelles.length; i++) {
+      nouvellesLignes.push(lignesActuelles[i]);
+    }
+    nouvellesLignes.push({
+      mot: mot,
+      couleurs: couleurs,
+    });
+    return nouvellesLignes;
+  };
+}
+
+// Retire le dernier caractère de la proposition en cours
+function retirerDerniereLettre(valeurActuelle) {
+  return valeurActuelle.slice(0, -1);
+}
+
+// Ajoute une lettre si la ligne n'est pas déjà pleine (5 lettres max)
+function ajouterLettre(lettre) {
+  return function ajouterSiPlace(valeurActuelle) {
+    if (valeurActuelle.length < LONGUEUR_MOT) {
+      return valeurActuelle + lettre;
+    }
+    return valeurActuelle;
+  };
 }
 
 export default Partie;

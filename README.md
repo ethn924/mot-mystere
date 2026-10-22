@@ -67,6 +67,14 @@ npm run build
 
 Aucune bibliothèque en plus de React, React Router et Vite.
 
+## Design et interface
+
+Pour le style visuel, j'ai conçu un thème sombre moderne et épuré (ardoise / nuit) :
+- Interface centrée sous forme de carte sombre avec léger dégradé radial et ombres douces.
+- Clavier virtuel ergonomique avec sensation tactile mécanique et touches contrastées.
+- Cases de jeu avec micro-animation d'apparition « pop » à la frappe et retournement 3D à la validation.
+- Palette de couleurs soignée (vert émeraude, jaune ambré, gris ardoise) garantissant un confort visuel optimal sans éblouir.
+
 ## Organisation
 
 ```text

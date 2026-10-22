@@ -1,5 +1,5 @@
 // Rôle du fichier : écran affichant les statistiques personnelles du joueur.
-// Parties jouées, pourcentage de victoires, séries et répartition des essais.
+// Mise en page en colonnes équilibrées pour tenir sur l'écran sans défilement vertical.
 
 import { Link } from "react-router-dom";
 import { lireStats } from "../logique/scores.js";
@@ -15,38 +15,65 @@ function Stats() {
   }
 
   return (
-    <main className="page">
-      <h1>Statistiques du joueur</h1>
+    <main className="page page-large">
+      <header className="page-header">
+        <h1>Statistiques du joueur</h1>
+        <p className="sous-titre">Tes performances et records enregistrés sur cet ordinateur.</p>
+      </header>
 
-      <ul>
-        <li>Parties jouées : {stats.partiesJouees}</li>
-        <li>Victoires : {stats.victoires} ({pourcentageVictoires}%)</li>
-        <li>Série en cours : {stats.serieActuelle}</li>
-        <li>Meilleure série : {stats.meilleureSerie}</li>
-        <li>Total des points : {stats.totalPoints}</li>
-      </ul>
+      <div className="grille-stats">
+        {/* Colonne 1 : Cartes de chiffres clés */}
+        <section className="bloc-panneau">
+          <h2>Indicateurs généraux</h2>
+          <div className="grille-chiffres-cles">
+            <div className="chiffre-carte">
+              <span className="chiffre-valeur">{stats.partiesJouees}</span>
+              <span className="chiffre-libelle">Parties jouées</span>
+            </div>
+            <div className="chiffre-carte">
+              <span className="chiffre-valeur">{pourcentageVictoires}%</span>
+              <span className="chiffre-libelle">Victoires ({stats.victoires})</span>
+            </div>
+            <div className="chiffre-carte">
+              <span className="chiffre-valeur">{stats.serieActuelle}</span>
+              <span className="chiffre-libelle">Série en cours</span>
+            </div>
+            <div className="chiffre-carte">
+              <span className="chiffre-valeur">{stats.meilleureSerie}</span>
+              <span className="chiffre-libelle">Record de série</span>
+            </div>
+            <div className="chiffre-carte chiffre-carte-large">
+              <span className="chiffre-valeur">{stats.totalPoints}</span>
+              <span className="chiffre-libelle">Total des points cumulés</span>
+            </div>
+          </div>
+        </section>
 
-      <h2>Répartition des victoires par essai</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre d'essais</th>
-            <th>Victoires</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1 essai (600 pts)</td><td>{stats.repartition[1]}</td></tr>
-          <tr><td>2 essais (500 pts)</td><td>{stats.repartition[2]}</td></tr>
-          <tr><td>3 essais (400 pts)</td><td>{stats.repartition[3]}</td></tr>
-          <tr><td>4 essais (300 pts)</td><td>{stats.repartition[4]}</td></tr>
-          <tr><td>5 essais (200 pts)</td><td>{stats.repartition[5]}</td></tr>
-          <tr><td>6 essais (100 pts)</td><td>{stats.repartition[6]}</td></tr>
-        </tbody>
-      </table>
-
-      <div style={{ marginTop: "1.5rem" }}>
-        <Link to="/">Retour à l'accueil</Link>
+        {/* Colonne 2 : Répartition des victoires par essai */}
+        <section className="bloc-panneau">
+          <h2>Répartition par essai</h2>
+          <table className="table-bareme">
+            <thead>
+              <tr>
+                <th>Essais</th>
+                <th>Victoires</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1 essai (600 pts)</td><td><strong>{stats.repartition[1]}</strong></td></tr>
+              <tr><td>2 essais (500 pts)</td><td><strong>{stats.repartition[2]}</strong></td></tr>
+              <tr><td>3 essais (400 pts)</td><td><strong>{stats.repartition[3]}</strong></td></tr>
+              <tr><td>4 essais (300 pts)</td><td><strong>{stats.repartition[4]}</strong></td></tr>
+              <tr><td>5 essais (200 pts)</td><td><strong>{stats.repartition[5]}</strong></td></tr>
+              <tr><td>6 essais (100 pts)</td><td><strong>{stats.repartition[6]}</strong></td></tr>
+            </tbody>
+          </table>
+        </section>
       </div>
+
+      <footer className="pied-page-action">
+        <Link to="/">Retour à l'accueil</Link>
+      </footer>
     </main>
   );
 }

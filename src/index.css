@@ -1,58 +1,263 @@
-body {
-  margin: 0;
-}
+/* Feuille de style globale - Le Mot Mystère
+   Design : Sombre Moderne, Épuré, Confortable & Équilibré (pas de scroll, taille respirante, alignements stricts) */
 
 :root {
-  font-family: system-ui, sans-serif;
-  color: #222;
-  background: #fff;
+  --fond-page: #0b1120;
+  --fond-carte: #1e293b;
+  --fond-carte-hover: #273549;
+  --texte-principal: #f8fafc;
+  --texte-secondaire: #94a3b8;
+  --bordure-carte: #334155;
+  --ombre-carte: 0 16px 36px -8px rgba(0, 0, 0, 0.5);
+
+  --vert: #22c55e;
+  --vert-sombre: #15803d;
+  --jaune: #eab308;
+  --jaune-sombre: #a16207;
+  --gris-case: #475569;
+  --bordure-case: #334155;
+  --bordure-active: #64748b;
+
+  --fond-touche: #334155;
+  --fond-touche-hover: #475569;
+  --texte-touche: #f8fafc;
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--texte-principal);
+  background-color: var(--fond-page);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: radial-gradient(circle at 50% 10%, #1e293b 0%, #0b1120 80%);
+  overflow-x: hidden;
 }
 
 #root {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  padding: 1.25rem 1rem;
 }
 
+/* Carte principale */
 .page {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 1.5rem;
+  width: 100%;
+  max-width: 35rem;
+  margin: auto;
+  padding: 1.6rem 2rem;
+  background: var(--fond-carte);
+  border: 1px solid var(--bordure-carte);
+  border-radius: 1.15rem;
+  box-shadow: var(--ombre-carte);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
-.page form {
+/* Page large pour Règles, Stats, Scores (exploite l'espace sans tasser) */
+.page-large {
+  max-width: 49rem;
+  padding: 1.8rem 2.2rem;
+}
+
+.page-header {
+  margin-bottom: 1.2rem;
+}
+
+h1 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin-bottom: 0.4rem;
+}
+
+.sous-titre {
+  color: var(--texte-secondaire);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  font-size: 0.98rem;
+}
+
+h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.85rem;
+  color: #f1f5f9;
+}
+
+p {
+  color: var(--texte-secondaire);
+  line-height: 1.5;
+  font-size: 0.94rem;
+}
+
+/* Accueil : mini cartes de règles */
+.cartes-apercu {
+  width: 100%;
   display: grid;
-  gap: 0.5rem;
-  max-width: 16rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+  margin: 0.5rem 0 1.25rem;
 }
 
-.page button,
+.carte-mini {
+  background-color: #0f172a;
+  border: 1px solid var(--bordure-carte);
+  border-radius: 0.75rem;
+  padding: 0.85rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.carte-mini strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #f1f5f9;
+  margin-bottom: 0.15rem;
+}
+
+.carte-mini small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--texte-secondaire);
+  line-height: 1.3;
+}
+
+.pastille {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 0.35rem;
+  flex-shrink: 0;
+}
+
+.pastille-verte { background-color: var(--vert); }
+.pastille-jaune { background-color: var(--jaune); }
+.pastille-grise { background-color: var(--gris-case); }
+
+/* Accueil : formulaire */
+.zone-lancement {
+  width: 100%;
+  background-color: #0f172a;
+  border: 1px solid var(--bordure-carte);
+  border-radius: 0.85rem;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.zone-lancement form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.zone-lancement label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  text-align: left;
+}
+
+.groupe-saisie {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.page input[type="text"] {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 2px solid var(--bordure-carte);
+  border-radius: 0.55rem;
+  outline: none;
+}
+
+.page input[type="text"]:focus {
+  border-color: var(--vert);
+}
+
+/* Boutons et liens */
+button,
 .page a {
-  margin-right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.35rem;
+  border-radius: 0.55rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+button[type="submit"],
+.ecran-fin button {
+  background-color: var(--vert);
+  color: #ffffff;
+  border: none;
+}
+
+button[type="submit"]:hover,
+.ecran-fin button:hover {
+  background-color: var(--vert-sombre);
+}
+
+.page a {
+  color: #e2e8f0;
+  background-color: #0f172a;
+  border: 1px solid var(--bordure-carte);
+}
+
+.page a:hover {
+  background-color: #1e293b;
+  border-color: #475569;
 }
 
 .nav-accueil {
   display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
 }
 
+.nav-accueil a {
+  font-size: 0.86rem;
+  padding: 0.6rem 1rem;
+}
+
+/* Grille de jeu (Partie) */
 .grille {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.4rem;
   width: fit-content;
-  margin-bottom: 1.5rem;
+  margin: 0.5rem auto 1rem;
 }
 
 .ligne {
   display: grid;
-  grid-template-columns: repeat(5, 3rem);
-  gap: 0.35rem;
+  grid-template-columns: repeat(5, 3.3rem);
+  gap: 0.4rem;
 }
 
-/* Animation de tremblement quand la ligne est refusée */
 @keyframes secouer {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-5px); }
@@ -64,55 +269,75 @@ body {
 }
 
 .ligne-refusee .case-lettre {
-  border-color: #d32f2f;
-  background-color: #ffebee;
+  border-color: #ef4444;
+  background-color: #451a1a;
+  color: #fca5a5;
 }
 
-/* Animation de retournement de case */
+@keyframes popLettre {
+  0% { transform: scale(0.85); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.case-remplie {
+  animation: popLettre 0.1s ease-out;
+  border-color: var(--bordure-active);
+}
+
 @keyframes retournement {
   0% { transform: rotateX(0); }
   50% { transform: rotateX(90deg); }
   100% { transform: rotateX(0); }
 }
 
+/* Case individuelle : taille fixe et alignement parfait */
 .case-lettre {
   display: grid;
-  width: 3rem;
+  width: 3.3rem;
+  height: 3.3rem;
   aspect-ratio: 1;
   place-items: center;
-  border: 1px solid #777;
-  font-weight: 700;
+  border: 2px solid var(--bordure-case);
+  border-radius: 0.45rem;
+  font-size: 1.45rem;
+  font-weight: 800;
   text-transform: uppercase;
+  background-color: #0f172a;
+  color: #ffffff;
+  user-select: none;
+  flex-shrink: 0;
 }
 
 .case-animee {
-  animation: retournement 0.5s ease;
+  animation: retournement 0.5s ease forwards;
 }
 
 .case-verte {
-  background: #6aaa64;
-  color: #fff;
-  border-color: #6aaa64;
+  background-color: var(--vert);
+  color: #ffffff;
+  border-color: var(--vert);
 }
 
 .case-jaune {
-  background: #c9b458;
-  color: #fff;
-  border-color: #c9b458;
+  background-color: var(--jaune);
+  color: #ffffff;
+  border-color: var(--jaune);
 }
 
 .case-grise {
-  background: #787c7e;
-  color: #fff;
-  border-color: #787c7e;
+  background-color: var(--gris-case);
+  color: #ffffff;
+  border-color: var(--gris-case);
 }
 
-/* Clavier à l'écran */
+/* Clavier virtuel */
 .clavier {
   display: grid;
-  gap: 0.4rem;
-  max-width: 32rem;
-  margin-top: 1rem;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: 31rem;
+  margin-top: 0.5rem;
 }
 
 .rangee-clavier {
@@ -122,82 +347,238 @@ body {
 }
 
 .touche {
-  min-width: 2rem;
-  height: 2.8rem;
-  padding: 0 0.5rem;
-  border: 1px solid #bbb;
-  border-radius: 4px;
-  background-color: #e5e5e5;
-  color: #111;
+  min-width: 2.15rem;
+  height: 2.9rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--bordure-carte);
+  border-radius: 0.4rem;
+  background-color: var(--fond-touche);
+  color: var(--texte-touche);
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  user-select: none;
 }
 
 .touche-speciale {
-  min-width: 3.5rem;
-  font-size: 0.8rem;
+  min-width: 3.8rem;
+  font-size: 0.78rem;
+  background-color: #243247;
 }
 
 .touche-verte {
-  background-color: #6aaa64;
-  color: #fff;
-  border-color: #6aaa64;
+  background-color: var(--vert);
+  color: #ffffff;
+  border-color: var(--vert);
 }
 
 .touche-jaune {
-  background-color: #c9b458;
-  color: #fff;
-  border-color: #c9b458;
+  background-color: var(--jaune);
+  color: #ffffff;
+  border-color: var(--jaune);
 }
 
 .touche-grise {
-  background-color: #787c7e;
-  color: #fff;
-  border-color: #787c7e;
+  background-color: #334155;
+  color: #94a3b8;
+  border-color: #334155;
+  opacity: 0.8;
 }
 
 .message-avertissement {
-  color: #d32f2f;
-  font-weight: 600;
-  margin-top: 0.75rem;
-  min-height: 1.5rem;
+  color: #f87171;
+  font-weight: 700;
+  margin: 0.3rem 0;
+  min-height: 1.4rem;
+  font-size: 0.92rem;
 }
 
 .message-chargement {
-  color: #555;
+  color: var(--texte-secondaire);
   font-style: italic;
-  margin-top: 0.75rem;
-  min-height: 1.5rem;
+  margin: 0.3rem 0;
+  min-height: 1.4rem;
+  font-size: 0.92rem;
 }
 
 .ecran-fin {
-  margin-top: 1.5rem;
-}
-
-/* Tableaux et listes des scores et règles */
-table {
+  margin-top: 0.85rem;
+  padding: 1.1rem 1.4rem;
+  border-radius: 0.75rem;
+  background-color: #0f172a;
+  border: 1px solid var(--bordure-carte);
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
 }
 
-th, td {
-  border: 1px solid #ddd;
-  padding: 0.5rem 0.75rem;
+.ecran-fin p {
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+}
+
+.ecran-fin button,
+.ecran-fin a {
+  margin: 0.35rem;
+}
+
+/* Grilles pour Règles et Statistiques (2 colonnes) */
+.grille-regles,
+.grille-stats {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.25rem;
+  width: 100%;
+  margin-bottom: 1.1rem;
+}
+
+.bloc-panneau {
+  background-color: #0f172a;
+  border: 1px solid var(--bordure-carte);
+  border-radius: 0.85rem;
+  padding: 1.1rem 1.25rem;
   text-align: left;
 }
 
-th {
-  background-color: #f5f5f5;
+.liste-exemples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
 }
 
+/* Alignement parfait de chaque ligne d'exemple */
 .exemple-couleur {
-  display: flex;
+  display: grid;
+  grid-template-columns: 3.3rem 1fr;
   align-items: center;
+  column-gap: 1rem;
+}
+
+.exemple-couleur .case-lettre {
+  margin: 0;
+}
+
+.exemple-couleur strong {
+  display: block;
+  font-size: 0.92rem;
+  color: #ffffff;
+  margin-bottom: 0.15rem;
+}
+
+.exemple-couleur p {
+  font-size: 0.84rem;
+  color: var(--texte-secondaire);
+  line-height: 1.35;
+  margin-bottom: 0;
+}
+
+/* Tableau compact du barème */
+.table-bareme {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-bareme th,
+.table-bareme td {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.86rem;
+  border: 1px solid var(--bordure-carte);
+}
+
+.table-bareme th {
+  background-color: #1e293b;
+  color: #cbd5e1;
+}
+
+.table-bareme td strong {
+  color: var(--vert);
+}
+
+/* Grille des indicateurs de statistiques */
+.grille-chiffres-cles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
-  margin-bottom: 0.75rem;
+}
+
+.chiffre-carte {
+  background-color: #1e293b;
+  border: 1px solid var(--bordure-carte);
+  border-radius: 0.6rem;
+  padding: 0.75rem 0.6rem;
+  text-align: center;
+}
+
+.chiffre-carte-large {
+  grid-column: span 2;
+}
+
+.chiffre-valeur {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.chiffre-libelle {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--texte-secondaire);
+  margin-top: 0.2rem;
+}
+
+/* Tableau des scores */
+.zone-tableau-scores {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.table-scores {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-scores th,
+.table-scores td {
+  padding: 0.55rem 0.85rem;
+  font-size: 0.88rem;
+  border: 1px solid var(--bordure-carte);
+}
+
+.table-scores th {
+  background-color: #1e293b;
+  color: #cbd5e1;
+}
+
+.badge-rang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.78rem;
+  background-color: #334155;
+  color: #ffffff;
+}
+
+.rang-1 { background-color: #eab308; color: #000; }
+.rang-2 { background-color: #94a3b8; color: #000; }
+.rang-3 { background-color: #b45309; color: #fff; }
+
+.mot-secret-score {
+  font-family: monospace;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #cbd5e1;
+}
+
+.points-vert {
+  color: var(--vert);
+}
+
+.pied-page-action {
+  margin-top: 0.75rem;
 }

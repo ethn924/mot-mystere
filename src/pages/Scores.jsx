@@ -1,5 +1,5 @@
 // Rôle du fichier : écran affichant les dix meilleures parties enregistrées.
-// Classement conservé dans le localStorage entre deux visites.
+// Classement conservé dans le localStorage entre deux visites, optimisé pour tenir sans défilement.
 
 import { Link } from "react-router-dom";
 import { lireScores } from "../logique/scores.js";
@@ -8,42 +8,46 @@ function Scores() {
   const scores = lireScores();
 
   return (
-    <main className="page">
-      <h1>Tableau des scores</h1>
-      <p>Les 10 meilleures parties enregistrées sur cet ordinateur :</p>
+    <main className="page page-large">
+      <header className="page-header">
+        <h1>Tableau des scores</h1>
+        <p className="sous-titre">Le Top 10 des meilleures parties enregistrées sur cet ordinateur.</p>
+      </header>
 
-      {scores.length === 0 ? (
-        <p>Aucune partie enregistrée pour le moment.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Rang</th>
-              <th>Pseudo</th>
-              <th>Mot</th>
-              <th>Essais</th>
-              <th>Points</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scores.map((score, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{score.pseudo}</td>
-                <td>{score.mot}</td>
-                <td>{score.essais}</td>
-                <td>{score.points}</td>
-                <td>{score.date}</td>
+      <section className="bloc-panneau zone-tableau-scores">
+        {scores.length === 0 ? (
+          <p className="message-vide">Aucune partie enregistrée pour le moment. Lance une partie pour inaugurer le classement !</p>
+        ) : (
+          <table className="table-scores">
+            <thead>
+              <tr>
+                <th>Rang</th>
+                <th>Joueur</th>
+                <th>Mot secret</th>
+                <th>Essais</th>
+                <th>Points</th>
+                <th>Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {scores.map((score, index) => (
+                <tr key={index}>
+                  <td><span className={"badge-rang rang-" + (index + 1)}>{index + 1}</span></td>
+                  <td><strong>{score.pseudo}</strong></td>
+                  <td><span className="mot-secret-score">{score.mot}</span></td>
+                  <td>{score.essais} / 6</td>
+                  <td><strong className="points-vert">{score.points} pts</strong></td>
+                  <td>{score.date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
 
-      <div style={{ marginTop: "1.5rem" }}>
+      <footer className="pied-page-action">
         <Link to="/">Retour à l'accueil</Link>
-      </div>
+      </footer>
     </main>
   );
 }

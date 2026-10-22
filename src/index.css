@@ -15,3 +15,23 @@ body {
 #root {
   min-height: 100vh;
 }
+
+.grille {
+  display: grid;
+  gap: 0.35rem;
+  width: fit-content;
+}
+
+.ligne {
+  display: grid;
+  grid-template-columns: repeat(5, 3rem);
+  gap: 0.35rem;
+}
+
+.case-lettre {
+  display: grid;
+  width: 3rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid #777;
+}

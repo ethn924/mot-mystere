@@ -9,6 +9,11 @@ function Partie() {
     function surTouche(event) {
       const touche = event.key;
 
+      if (touche === "Backspace") {
+        setProposition((valeurActuelle) => valeurActuelle.slice(0, -1));
+        return;
+      }
+
       if (event.ctrlKey || event.metaKey || event.altKey) {
         return;
       }

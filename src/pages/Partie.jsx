@@ -1,10 +1,12 @@
+import Grille from "../components/Grille.jsx";
+
 function Partie() {
   return (
     <main>
       <h1>Partie</h1>
-      <p>Écran de jeu à construire.</p>
+      <Grille />
     </main>
-  )
+  );
 }
 
-export default Partie
+export default Partie;

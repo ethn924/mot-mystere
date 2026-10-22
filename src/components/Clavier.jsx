@@ -1,5 +1,6 @@
-// Rôle du fichier : composant d'affichage pour le clavier virtuel à l'écran.
-// Permet de jouer à la souris ou au tactile. Les touches prennent la couleur de ce qu'on sait déjà de chaque lettre.
+// Clavier : clavier virtuel AZERTY à l'écran.
+// Les touches se colorent selon ce qu'on sait déjà des lettres (vert > jaune > gris).
+// Le clavier physique est aussi géré ici via un écouteur keydown.
 
 const DISPOSITION_TOUCHES = [
   ["A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -18,9 +19,11 @@ function Clavier({ surTouche, statutsLettres }) {
       const valeur = rangee[t];
       let classeTouche = "touche";
 
+      // ENTREE et EFFACER sont des touches spéciales, pas des lettres
       if (valeur === "ENTREE" || valeur === "EFFACER") {
         classeTouche = classeTouche + " touche-speciale";
       } else {
+        // On applique la couleur connue pour cette lettre (vert, jaune ou gris)
         const statut = statutsLettres[valeur];
         if (statut === "vert") {
           classeTouche = classeTouche + " touche-verte";
@@ -31,9 +34,10 @@ function Clavier({ surTouche, statutsLettres }) {
         }
       }
 
+      // EFFACER s'affiche avec le symbole de suppression
       let libelle = valeur;
       if (valeur === "EFFACER") {
-        libelle = "⌫";
+        libelle = "\u232B"; // Symbole de suppression !
       }
 
       touchesRangee.push(

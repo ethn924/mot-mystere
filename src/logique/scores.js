@@ -1,5 +1,5 @@
-// Rôle du fichier : gestion de la persistance locale des scores et statistiques du joueur.
-// Enregistre les parties dans le localStorage et calcule le classement des 10 meilleurs scores.
+// scores.js : gère l'enregistrement des parties dans le localStorage.
+// Sauvegarde les scores, calcule le top 10 et met à jour les statistiques du joueur.
 
 const CLE_SCORES = "scores_mot_mystere";
 const CLE_STATS = "stats_mot_mystere";

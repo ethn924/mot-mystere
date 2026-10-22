@@ -1,5 +1,5 @@
-// Rôle du fichier : point d'entrée de la navigation React Router.
-// Associe chaque écran à sa propre adresse (URL).
+// App : configure le routeur.
+// Chaque page du jeu a sa propre adresse. Si on tombe sur une adresse inconnue, on renvoie à l'accueil.
 
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Accueil from "./pages/Accueil.jsx";

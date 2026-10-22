@@ -1,16 +1,17 @@
-// Rôle du fichier : composant d'affichage pour une case individuelle de la grille.
-// Reçoit une lettre, une couleur (vert, jaune ou gris) et un délai d'animation éventuel.
+// CaseLettre : une seule case de la grille.
+// Elle affiche une lettre, et change de classe CSS quand le mot est validé (vert / jaune / gris).
+// L'index sert à décaler l'animation pour que les cases ne tournent pas toutes en même temps.
 
 function CaseLettre({ lettre, couleur, index }) {
   let classe = "case-lettre";
   let style = {};
 
-  // Si une lettre est tapée mais pas encore validée, on applique une petite animation d'apparition pop
+  // Lettre en cours de frappe, pas encore validée -> petit effet d'apparition
   if (lettre && !couleur) {
     classe = classe + " case-remplie";
   }
 
-  // Dès que la ligne est validée, on applique la couleur et l'animation de retournement avec décalage
+  // Ligne validée : on ajoute la couleur et l'animation de retournement
   if (couleur === "vert") {
     classe = classe + " case-verte case-animee";
     style = { animationDelay: index * 0.15 + "s" };

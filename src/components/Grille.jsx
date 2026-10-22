@@ -1,5 +1,6 @@
-// Rôle du fichier : composant d'affichage pour la grille complète de 6 lignes fixes.
-// Construit l'état visuel de chaque ligne : validée, en cours de frappe, ou vide.
+// Grille : affiche les 6 lignes du jeu.
+// Elle choisit pour chaque emplacement : une ligne déjà validée, la ligne en cours de frappe, ou une ligne vide.
+// Le compteurRefus sert à relancer l'animation de tremblement à chaque nouveau mot refusé.
 
 import Ligne from "./Ligne.jsx";
 import { NOMBRE_ESSAIS } from "../logique/jeu.js";
@@ -14,7 +15,7 @@ function Grille({ lignesValidees, proposition, ligneRefusee, compteurRefus }) {
       lignesAffichees.push(
         <Ligne mot={ligne.mot} couleurs={ligne.couleurs} key={i} />
       );
-    // 2. La ligne en cours de frappe (on change la key via compteurRefus pour relancer l'animation de tremblement)
+    // 2. La ligne en cours de frappe. On change la key avec compteurRefus pour forcer le rafraîchissement et relancer le tremblement
     } else if (i === lignesValidees.length) {
       lignesAffichees.push(
         <Ligne
@@ -24,7 +25,7 @@ function Grille({ lignesValidees, proposition, ligneRefusee, compteurRefus }) {
           key={"active-" + compteurRefus}
         />
       );
-    // 3. Les lignes restantes encore vides
+    // 3. Les lignes restantes, encore vides
     } else {
       lignesAffichees.push(<Ligne mot="" couleurs={[]} key={i} />);
     }

@@ -1,5 +1,5 @@
-// Rôle du fichier : écran affichant les statistiques personnelles du joueur.
-// Mise en page en colonnes équilibrées pour tenir sur l'écran sans défilement vertical.
+// Stats : affiche les statistiques personnelles du joueur (taux de victoire, séries, points, répartition par essai).
+// Données lues depuis le localStorage.
 
 import { Link } from "react-router-dom";
 import { lireStats } from "../logique/scores.js";
@@ -7,6 +7,7 @@ import { lireStats } from "../logique/scores.js";
 function Stats() {
   const stats = lireStats();
 
+  // pourcentage de victoires arrondi à l'entier
   let pourcentageVictoires = 0;
   if (stats.partiesJouees > 0) {
     pourcentageVictoires = Math.round(
@@ -22,7 +23,7 @@ function Stats() {
       </header>
 
       <div className="grille-stats">
-        {/* Colonne 1 : Cartes de chiffres clés */}
+        {/* Colonne 1 : chiffres clés (parties, victoires, séries, points) */}
         <section className="bloc-panneau">
           <h2>Indicateurs généraux</h2>
           <div className="grille-chiffres-cles">
@@ -49,7 +50,7 @@ function Stats() {
           </div>
         </section>
 
-        {/* Colonne 2 : Répartition des victoires par essai */}
+        {/* Colonne 2 : combien de victoires en 1, 2, 3... essais */}
         <section className="bloc-panneau">
           <h2>Répartition par essai</h2>
           <table className="table-bareme">

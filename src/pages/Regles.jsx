@@ -1,5 +1,4 @@
-// Rôle du fichier : écran affichant les règles du jeu avec des exemples illustrés pour chaque couleur.
-// Mise en page en colonnes horizontales compactes pour éviter tout défilement d'écran.
+// Règles : explique les couleurs (vert / jaune / gris) et le barème des points.
 
 import { Link } from "react-router-dom";
 import CaseLettre from "../components/CaseLettre.jsx";
@@ -8,15 +7,14 @@ function Regles() {
   return (
     <main className="page page-large">
       <header className="page-header">
-        <h1>Règles du jeu</h1>
+        <h1>Regles du jeu</h1>
         <p className="sous-titre">
           Trouve un mot mystère de 5 lettres en 6 essais. Chaque proposition doit être un mot français reconnu par le Wiktionnaire.
         </p>
       </header>
 
-      {/* Disposition en deux colonnes équilibrées */}
       <div className="grille-regles">
-        {/* Colonne 1 : Les 3 couleurs expliquées avec leurs cases */}
+        {/* Colonne 1 : explication des trois couleurs avec exemples visuels */}
         <section className="bloc-panneau">
           <h2>Signification des couleurs</h2>
           <div className="liste-exemples">
@@ -24,7 +22,7 @@ function Regles() {
               <CaseLettre lettre="A" couleur="vert" />
               <div>
                 <strong>Vert (Bien placé)</strong>
-                <p>La lettre est dans le mot et exactement à cette place.</p>
+                <p>La lettre est dans le mot et exactement a cette place.</p>
               </div>
             </div>
 
@@ -32,7 +30,7 @@ function Regles() {
               <CaseLettre lettre="R" couleur="jaune" />
               <div>
                 <strong>Jaune (Mal placé)</strong>
-                <p>La lettre est dans le mot, mais à une autre place.</p>
+                <p>La lettre est dans le mot, mais a une autre place.</p>
               </div>
             </div>
 
@@ -46,7 +44,7 @@ function Regles() {
           </div>
         </section>
 
-        {/* Colonne 2 : Le barème officiel sous forme de tableau compact */}
+        {/* Colonne 2 : tableau du barème officiel */}
         <section className="bloc-panneau">
           <h2>Barème officiel des points</h2>
           <table className="table-bareme">

@@ -1,10 +1,10 @@
-// Rôle du fichier : écran d'accueil du jeu.
-// Affiche la présentation personnalisée d'Ethan, le rappel visuel des règles, le champ pseudo et les accès aux autres pages.
+// Accueil : page d'entrée du jeu.
+// Le joueur choisit son pseudo (mémorisé dans le navigateur) et lance une partie.
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-// Récupère le pseudo stocké dans le navigateur lors d'une partie précédente
+// récupère le pseudo déjà enregistré dans le navigateur, ou une chaîne vide si c'est la première visite
 function lirePseudoSauve() {
   const pseudoSauve = localStorage.getItem("pseudo");
   if (pseudoSauve === null) {
@@ -23,7 +23,7 @@ function Accueil() {
 
   function lancerPartie(event) {
     event.preventDefault();
-    // On sauvegarde le pseudo pour s'en souvenir lors des prochaines visites
+    // on mémorise le pseudo pour la prochaine visite
     localStorage.setItem("pseudo", pseudo);
     navigate("/partie");
   }
@@ -31,15 +31,15 @@ function Accueil() {
   return (
     <main className="page page-accueil">
       <header className="accueil-entete">
-        <h1>Le Mot Mystère</h1>
+        <h1>Le Mot Mystere</h1>
         <p className="sous-titre">
-          Bienvenue sur mon jeu de lettres en React ! Mets ton vocabulaire à
-          l'épreuve et trouve le mot secret en 6 essais maximum.
+          Bienvenue sur mon jeu de lettres en React ! Mets ton vocabulaire a
+          l'epreuve et trouve le mot secret en 6 essais maximum.
         </p>
       </header>
 
-      {/* Cartes d'aperçu rapide des règles pour habiller la page */}
-      <section className="cartes-apercu" aria-label="Aperçu des règles">
+      {/* petits rappels visuels des trois couleurs pour le joueur */}
+      <section className="cartes-apercu" aria-label="Apercu des regles">
         <div className="carte-mini">
           <span className="pastille pastille-verte"></span>
           <div>
@@ -63,7 +63,7 @@ function Accueil() {
         </div>
       </section>
 
-      {/* Formulaire de lancement */}
+      {/* formulaire pour entrer son pseudo et demarrer */}
       <section className="zone-lancement">
         <form onSubmit={lancerPartie}>
           <label htmlFor="pseudo">Choisis ton pseudo pour le classement</label>
@@ -82,7 +82,7 @@ function Accueil() {
         </form>
       </section>
 
-      {/* Liens de navigation secondaire */}
+      {/* liens vers les autres pages */}
       <footer className="accueil-pied">
         <nav className="nav-accueil" aria-label="Menu principal">
           <Link to="/scores">

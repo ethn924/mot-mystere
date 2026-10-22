@@ -1,5 +1,5 @@
-// Rôle du fichier : gère les échanges réseau avec l'API MediaWiki du Wiktionnaire.
-// Isole les requêtes, vérifie que le mot existe en français et gère les accents.
+// wiktionnaire.js : contacte l'API du Wiktionnaire pour vérifier si un mot existe en français.
+// Isole toutes les requêtes réseau dans ce fichier.
 
 import { normaliserMot } from "./jeu.js";
 

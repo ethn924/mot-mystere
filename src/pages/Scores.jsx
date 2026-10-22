@@ -1,5 +1,5 @@
-// Rôle du fichier : écran affichant les dix meilleures parties enregistrées.
-// Classement conservé dans le localStorage entre deux visites, optimisé pour tenir sans défilement.
+// Scores : affiche le top 10 des meilleures parties, trie par points puis par nombre d'essais.
+// Les données sont lues depuis le localStorage.
 
 import { Link } from "react-router-dom";
 import { lireScores } from "../logique/scores.js";

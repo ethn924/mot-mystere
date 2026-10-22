@@ -1,4 +1,4 @@
-# Le Mot Mystère
+﻿# Le Mot Mystère
 
 Jeu de lettres en React, projet de cours.
 
@@ -65,7 +65,7 @@ npm run lint
 npm run build
 ```
 
-Aucune bibliothèque en plus de React, React Router et Vite.
+Uniquement React, React Router et Vite en dépendances de production. Les outils de test (Vitest, Testing Library, jsdom) ont été ajoutés et configurés pour anticiper les tests automatisés demandés au palier 4, mais ils ne sont pas encore utilisés.
 
 ## Design et interface
 
@@ -89,10 +89,10 @@ src/
 
 ## Difficultés rencontrées et solutions
 
-Franchement, j'ai passé pas mal de temps sur plusieurs points du sujet où je me suis pris la tête avant de trouver la bonne approche :
+Franchement, j'ai passé pas mal de temps sur plusieurs points du sujet où je me suis pris la tête avant de trouver la bonne approche. J'ai consigné les galères les plus techniques dans le fichier `LIRE_AVANT_MODIF_LOGIQUE.md` à la racine, avec ce qui m'a vraiment semblé complexe et comment je m'en suis sorti.
 
 1. **Le piège des lettres en double dans `comparer()`** :  
-   Au début, je voulais faire une seule boucle simple pour colorer les lettres au fur et à mesure. Grosse erreur : sur un mot comme ARBRE avec une proposition ERRER, ça me mettait trois R jaunes alors qu'il n'y en a que deux dans le mot. J'ai dû tout poser sur papier et séparer en deux passes franches : d'abord tous les verts (et je marque les lettres consommées à `null`), et ensuite seulement les jaunes avec ce qui reste de disponible.
+   Au début, je voulais faire une seule boucle simple pour colorer les lettres au fur et à mesure. Grosse erreur : sur un mot comme ARBRE avec une proposition ERRER, ça me mettait trois R jaunes alors qu'il n'y en a que deux dans le mot. J'ai dû tout poser sur papier et séparer en 2 boucles : d'abord tous les verts (et je marque les lettres consommées à `null`), et ensuite seulement les jaunes avec ce qui reste de disponible.
 
 2. **L'écouteur d'événement `keydown` et l'état périmé** :  
    Un vrai casse-tête au début : quand j'appuyais sur Entrée, le composant validait une chaîne vide ou l'ancienne lettre tapée. J'ai compris que la fonction dans `addEventListener` gardait la référence de la première valeur du state. J'ai dû faire attention aux dépendances du `useEffect` et m'assurer de bien nettoyer avec `removeEventListener` pour ne pas empiler 15 écouteurs à chaque touche.

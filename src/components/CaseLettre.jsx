@@ -1,14 +1,19 @@
 // Rôle du fichier : composant d'affichage pour une case individuelle de la grille.
-// Reçoit une lettre et une couleur (vert, jaune ou gris) et applique la classe CSS correspondante.
+// Reçoit une lettre, une couleur et un délai d'animation éventuel.
 
-function CaseLettre({ lettre, couleur }) {
+function CaseLettre({ lettre, couleur, index }) {
   let classe = "case-lettre";
+  let style = {};
+
   if (couleur === "vert") {
-    classe = classe + " case-verte";
+    classe = classe + " case-verte case-animee";
+    style = { animationDelay: index * 0.15 + "s" };
   } else if (couleur === "jaune") {
-    classe = classe + " case-jaune";
+    classe = classe + " case-jaune case-animee";
+    style = { animationDelay: index * 0.15 + "s" };
   } else if (couleur === "gris") {
-    classe = classe + " case-grise";
+    classe = classe + " case-grise case-animee";
+    style = { animationDelay: index * 0.15 + "s" };
   }
 
   let texte = "";
@@ -17,7 +22,7 @@ function CaseLettre({ lettre, couleur }) {
   }
 
   return (
-    <span className={classe} role="gridcell">
+    <span className={classe} style={style} role="gridcell">
       {texte}
     </span>
   );

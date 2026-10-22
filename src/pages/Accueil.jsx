@@ -1,8 +1,8 @@
 // Rôle du fichier : écran d'accueil du jeu.
-// Affiche le titre, les règles simples, le champ pseudo mémorisé dans le localStorage et le bouton pour lancer la partie.
+// Affiche le titre, les règles simples, le champ pseudo mémorisé dans le localStorage et les accès aux différents écrans.
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 // Récupère le pseudo stocké dans le navigateur lors d'une partie précédente
 function lirePseudoSauve() {
@@ -36,6 +36,7 @@ function Accueil() {
         proposition, les lettres passent au vert (bonne place), au jaune
         (présente ailleurs) ou au gris (absente).
       </p>
+
       <form onSubmit={lancerPartie}>
         <label htmlFor="pseudo">Pseudo</label>
         <input
@@ -44,8 +45,14 @@ function Accueil() {
           value={pseudo}
           onChange={changerPseudo}
         />
-        <button type="submit">Jouer</button>
+        <button type="submit">Nouvelle partie</button>
       </form>
+
+      <nav className="nav-accueil" aria-label="Menu principal">
+        <Link to="/scores">Tableau des scores</Link>
+        <Link to="/stats">Statistiques</Link>
+        <Link to="/regles">Règles du jeu</Link>
+      </nav>
     </main>
   );
 }

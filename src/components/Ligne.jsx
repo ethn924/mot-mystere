@@ -16,10 +16,15 @@ function Ligne({ mot, couleurs, estRefusee }) {
     motLigne = "";
   }
 
-  // On crée les 5 cases de la ligne, lettre par lettre
+  // On crée les 5 cases de la ligne, lettre par lettre, avec leur indice pour l'animation
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     listeLettre.push(
-      <CaseLettre lettre={motLigne[i]} couleur={couleursLigne[i]} key={i} />
+      <CaseLettre
+        lettre={motLigne[i]}
+        couleur={couleursLigne[i]}
+        index={i}
+        key={i}
+      />
     );
   }
 

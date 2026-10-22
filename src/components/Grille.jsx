@@ -4,7 +4,7 @@
 import Ligne from "./Ligne.jsx";
 import { NOMBRE_ESSAIS } from "../logique/jeu.js";
 
-function Grille({ lignesValidees, proposition, ligneRefusee }) {
+function Grille({ lignesValidees, proposition, ligneRefusee, compteurRefus }) {
   const lignesAffichees = [];
 
   for (let i = 0; i < NOMBRE_ESSAIS; i++) {
@@ -14,14 +14,14 @@ function Grille({ lignesValidees, proposition, ligneRefusee }) {
       lignesAffichees.push(
         <Ligne mot={ligne.mot} couleurs={ligne.couleurs} key={i} />
       );
-    // 2. La ligne en cours de frappe (qui peut être en erreur visuelle si mot refusé)
+    // 2. La ligne en cours de frappe (on change la key via compteurRefus pour relancer l'animation de tremblement)
     } else if (i === lignesValidees.length) {
       lignesAffichees.push(
         <Ligne
           mot={proposition}
           couleurs={[]}
           estRefusee={ligneRefusee}
-          key={i}
+          key={"active-" + compteurRefus}
         />
       );
     // 3. Les lignes restantes encore vides

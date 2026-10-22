@@ -125,3 +125,34 @@ export function calculerPoints(nombreEssais, gagne) {
   }
   return 0;
 }
+
+// Calcule la meilleure couleur connue pour chaque lettre du clavier à partir des lignes jouées
+// Priorité : vert > jaune > gris
+export function calculerStatutsLettres(lignes) {
+  const statuts = {};
+
+  for (let i = 0; i < lignes.length; i++) {
+    const mot = lignes[i].mot;
+    const couleurs = lignes[i].couleurs;
+
+    for (let j = 0; j < mot.length; j++) {
+      const lettre = mot[j].toUpperCase();
+      const couleur = couleurs[j];
+      const statutActuel = statuts[lettre];
+
+      if (statutActuel === "vert") {
+        continue;
+      }
+
+      if (couleur === "vert") {
+        statuts[lettre] = "vert";
+      } else if (couleur === "jaune" && statutActuel !== "vert") {
+        statuts[lettre] = "jaune";
+      } else if (couleur === "gris" && !statutActuel) {
+        statuts[lettre] = "gris";
+      }
+    }
+  }
+
+  return statuts;
+}

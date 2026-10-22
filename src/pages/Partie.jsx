@@ -169,7 +169,8 @@ function Partie() {
 
   return (
     <main className="page">
-      <h1>Le Mot Mystere</h1>
+      <h1>Le Mot Mystère</h1>
+      <Link to="/" className="bouton-retour">Retour à l'accueil</Link>
 
       <Grille
         lignesValidees={lignes}

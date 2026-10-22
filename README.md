@@ -2,7 +2,7 @@
 
 Jeu de lettres en React, projet de cours.
 
-Palier visé : **palier 3 (le confort de jeu)**.
+Palier visé : **palier 4 (le mot du jour)**.
 
 ## Auteur
 
@@ -15,7 +15,7 @@ Ethan (ethn924) — projet réalisé individuellement avec l'accord du professeu
 | Palier 1 : le jeu | Fait |
 | Palier 2 : le dictionnaire | Fait |
 | Palier 3 : le confort de jeu | Fait |
-| Palier 4 : le mot du jour | Pas commencé |
+| Palier 4 : le mot du jour | Pas commencé (setup prêt : outils de test ajoutés) |
 | Palier 5 : les variantes | Pas commencé |
 | Palier 6 : les quatre grilles | Pas commencé |
 
@@ -50,6 +50,7 @@ Ethan (ethn924) — projet réalisé individuellement avec l'accord du professeu
 - Écran des statistiques : parties jouées, taux de victoires, série en cours, meilleure série, total des points et répartition des victoires par nombre d'essais.
 - Écran des règles : explications détaillées et exemple illustré des trois couleurs.
 - Navigation React Router dédiée : chaque écran a sa propre adresse distincte (`/`, `/partie`, `/scores`, `/stats`, `/regles`).
+- Bouton Retour à l'accueil disponible depuis la page de partie pour quitter une partie en cours.
 
 ## Lancer le projet
 

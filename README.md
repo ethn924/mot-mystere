@@ -25,54 +25,15 @@ l'accord du professeur.
 
 ## La suite
 
-Ce qu'il me reste à faire pour valider le palier 1, dans l'ordre où je
-voulais le faire.
+Ce qu'il me reste à faire pour valider le palier 1 :
 
-**1. Tirer le mot et valider avec Entrée**
+1. Tirer le mot mystère au hasard et le valider avec la touche Entrée.
+2. Comparer la proposition avec le mot mystère et afficher les couleurs.
+3. Poser les couleurs à l'écran au moment de la validation.
+4. Détecter la victoire et la défaite, révéler le mot, compter les points.
+5. Créer la page d'accueil avec le pseudo mémorisé.
 
-- Dans `src/logique/jeu.js`, une fonction qui tire un mot au hasard dans
-  `src/data/mots-solutions.json` (import du JSON, `Math.random()`, index du
-  tableau).
-- Dans `Partie.jsx`, deux choses en mémoire : `proposition` (ce que je tape en
-  ce moment) et `lignes` (les mots déjà validés, dans l'ordre). Pour ajouter
-  un mot à la liste : `[...liste, mot]`.
-- La touche Entrée se reconnaît par son nom, `event.key === "Enter"`. Elle
-  valide la proposition si elle fait cinq lettres, la ligne passe à la
-  suite et la proposition repart vide.
-- `Grille.jsx` affiche la première ligne validée en ligne 1, la suivante en
-  ligne 2, etc. La proposition en cours reste à leur place.
-
-**2. La comparaison, dans `jeu.js`**
-
-- Une fonction `comparer(mot, proposition)` qui rend la couleur de chaque
-  lettre de la proposition : `vert` si la lettre est à la bonne place,
-  `jaune` si elle est dans le mot mais pas à la bonne place, `gris` sinon.
-- Comme elle ne dépend de rien, je peux l'appeler seule dans la console pour
-  vérifier un résultat, sans passer par l'interface.
-- Les lettres en double : d'abord je marque les lettres bien placées, puis
-  j'attribue les jaunes en tenant compte de ce qui reste dans le mot.
-
-**3. Les couleurs à l'écran**
-
-- `CaseLettre.jsx` reçoit la couleur en plus de la lettre, et l'applique
-  avec une classe CSS.
-- Les couleurs se posent au moment de la validation, pas pendant la frappe :
-  une ligne validée ne doit plus changer.
-
-**4. Victoire, défaite, points**
-
-- La partie finit quand le mot est trouvé, ou quand les six essais sont
-  passés (à ce moment-là le mot est révélé).
-- Les points suivent le barème du sujet : 600 au premier essai, 500 au
-  deuxième, et ainsi de suite jusqu'à 100 au sixième, 0 en cas de défaite.
-- Un bouton pour rejouer ou revenir à l'accueil.
-
-**5. La page d'accueil**
-
-- Nom du jeu, une phrase d'explication, un champ pour le pseudo, un bouton
-  pour lancer la partie.
-- Le pseudo est rangé dans `localStorage` pour le retrouver à la prochaine
-  visite. Il faut `JSON.stringify` et `JSON.parse`.
+Je ferai ces étapes dans cet ordre, une à une.
 
 ## Organisation du code
 
@@ -116,8 +77,6 @@ La proposition est un état de `Partie` :
 const [proposition, setProposition] = useState("");
 ```
 
-Deux notions sont utilisées pour la faire changer au clavier.
-
 **`useEffect`** sert à faire une action en dehors de l'affichage. Ici, on
 demande au navigateur d'appeler `surTouche` à chaque pression de touche :
 
@@ -125,18 +84,9 @@ demande au navigateur d'appeler `surTouche` à chaque pression de touche :
 window.addEventListener("keydown", surTouche);
 ```
 
-et, quand on quitte l'écran, on retire l'écouteur. C'est la fonction de
-nettoyage renvoyée par l'effet :
+et, quand on quitte l'écran, on retire l'écouteur.
 
-```jsx
-return () => {
-  window.removeEventListener("keydown", surTouche);
-};
-```
-
-**La forme « fonction » de `setProposition`.** L'effet ne se rejoue pas à
-chaque frappe, donc la variable `proposition` vue dans `surTouche` est
-périmée : elle vaut toujours la valeur initiale. En donnant une fonction à
+**La forme « fonction » de `setProposition`.** En donnant une fonction à
 `setProposition`, React lui passe la proposition du moment de la frappe :
 
 ```jsx
@@ -148,8 +98,6 @@ setProposition((valeurActuelle) => {
 });
 ```
 
-C'est la seule forme qui lit la valeur à jour.
-
 ## Ce qui m'a posé problème
 
 - **L'état figé dans l'écouteur.** En écrivant
@@ -157,15 +105,11 @@ C'est la seule forme qui lit la valeur à jour.
   l'écran : `proposition` valait encore la chaîne vide. La forme « fonction »
   de `setProposition` a réglé le problème.
 - **La syntaxe de l'effet.** `useEffect(() => { ... }, [])` : la fonction à
-  exécuter, puis le tableau des dépendances, puis les accolades et
-  parenthèses qui ferment chaque morceau.
+  exécuter, puis le tableau des dépendances.
 - **Deux écritures pour la même donnée.** Le champ de saisie et le clavier
   modifiaient tous deux `proposition`. Le champ est passé en lecture seule
   (`readOnly`) : il affiche la proposition, c'est le clavier qui écrit.
-- **La touche Retour arrière.** `slice(0, -1)` retire la dernière lettre,
-  alors que `slice(0, 1)` ne garde que la première. En lisant `proposition`
-  directement au lieu de la forme fonction, la proposition était vidée à
-  chaque appui.
+- **La touche Retour arrière.** `slice(0, -1)` retire la dernière lettre.
 
 ## Outils du projet
 

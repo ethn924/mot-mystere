@@ -1,8 +1,10 @@
+// Rôle du fichier : composant d'affichage pour la grille complète de 6 lignes fixes.
+// Construit l'état visuel de chaque ligne : validée, en cours de frappe, ou vide.
+
 import Ligne from "./Ligne.jsx";
 import { NOMBRE_ESSAIS } from "../logique/jeu.js";
 
-// La grille complète : affiche toujours 6 lignes fixes
-function Grille({ lignesValidees, proposition }) {
+function Grille({ lignesValidees, proposition, ligneRefusee }) {
   const lignesAffichees = [];
 
   for (let i = 0; i < NOMBRE_ESSAIS; i++) {
@@ -12,10 +14,15 @@ function Grille({ lignesValidees, proposition }) {
       lignesAffichees.push(
         <Ligne mot={ligne.mot} couleurs={ligne.couleurs} key={i} />
       );
-    // 2. La ligne en cours de frappe
+    // 2. La ligne en cours de frappe (qui peut être en erreur visuelle si mot refusé)
     } else if (i === lignesValidees.length) {
       lignesAffichees.push(
-        <Ligne mot={proposition} couleurs={[]} key={i} />
+        <Ligne
+          mot={proposition}
+          couleurs={[]}
+          estRefusee={ligneRefusee}
+          key={i}
+        />
       );
     // 3. Les lignes restantes encore vides
     } else {

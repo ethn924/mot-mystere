@@ -1,3 +1,6 @@
+// Rôle du fichier : point d'entrée de la navigation React Router.
+// Associe chaque URL (route) à son composant de page.
+
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Accueil from "./pages/Accueil.jsx";
 import Partie from "./pages/Partie.jsx";

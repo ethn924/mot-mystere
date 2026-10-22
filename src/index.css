@@ -45,6 +45,11 @@ body {
   gap: 0.35rem;
 }
 
+.ligne-refusee .case-lettre {
+  border-color: #d32f2f;
+  background-color: #ffebee;
+}
+
 .case-lettre {
   display: grid;
   width: 3rem;
@@ -71,6 +76,20 @@ body {
   background: #787c7e;
   color: #fff;
   border-color: #787c7e;
+}
+
+.message-avertissement {
+  color: #d32f2f;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  min-height: 1.5rem;
+}
+
+.message-chargement {
+  color: #555;
+  font-style: italic;
+  margin-top: 0.75rem;
+  min-height: 1.5rem;
 }
 
 .ecran-fin {

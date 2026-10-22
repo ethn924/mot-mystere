@@ -1,3 +1,6 @@
+// Rôle du fichier : écran d'accueil du jeu.
+// Affiche le titre, les règles simples, le champ pseudo mémorisé dans le localStorage et le bouton pour lancer la partie.
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

@@ -1,8 +1,10 @@
+// Rôle du fichier : composant d'affichage pour une ligne complète de 5 cases.
+// Reçoit une proposition, les couleurs associées et un booléen indiquant si le mot est refusé.
+
 import { LONGUEUR_MOT } from "../logique/jeu.js";
 import CaseLettre from "./CaseLettre.jsx";
 
-// Une ligne de la grille : elle affiche exactement 5 cases
-function Ligne({ mot, couleurs }) {
+function Ligne({ mot, couleurs, estRefusee }) {
   const listeLettre = [];
   let couleursLigne = couleurs;
   if (!couleursLigne) {
@@ -21,8 +23,13 @@ function Ligne({ mot, couleurs }) {
     );
   }
 
+  let classeLigne = "ligne";
+  if (estRefusee) {
+    classeLigne = classeLigne + " ligne-refusee";
+  }
+
   return (
-    <div className="ligne" role="row">
+    <div className={classeLigne} role="row">
       {listeLettre}
     </div>
   );

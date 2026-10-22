@@ -1,3 +1,6 @@
+// Rôle du fichier : regroupe toute la logique métier pure du jeu (règles, comparaison, points, état).
+// Séparé de l'affichage pour respecter le sujet et rester facile à tester sans React.
+
 export const NOMBRE_ESSAIS = 6;
 export const LONGUEUR_MOT = 5;
 

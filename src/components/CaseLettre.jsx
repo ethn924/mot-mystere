@@ -1,4 +1,6 @@
-// Une case individuelle qui affiche une lettre et prend sa couleur (vert, jaune ou gris)
+// Rôle du fichier : composant d'affichage pour une case individuelle de la grille.
+// Reçoit une lettre et une couleur (vert, jaune ou gris) et applique la classe CSS correspondante.
+
 function CaseLettre({ lettre, couleur }) {
   let classe = "case-lettre";
   if (couleur === "vert") {

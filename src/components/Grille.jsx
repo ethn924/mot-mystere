@@ -1,11 +1,15 @@
 import Ligne from "./Ligne.jsx";
 import { NOMBRE_ESSAIS } from "../logique/jeu.js";
 
-function Grille() {
+function Grille({ proposition }) {
   const lignes = [];
 
   for (let i = 0; i < NOMBRE_ESSAIS; i++) {
-    lignes.push(<Ligne mot="" key={i} />);
+    let motLigne = "";
+    if (i === 0) {
+      motLigne = proposition;
+    }
+    lignes.push(<Ligne mot={motLigne} key={i} />);
   }
 
   return (

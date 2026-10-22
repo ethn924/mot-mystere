@@ -1,9 +1,16 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import Accueil from './pages/Accueil.jsx'
+import Partie from './pages/Partie.jsx'
+
 function App() {
   return (
-    <div>
-      <h1>Le Mot Mystère</h1>
-      <p>Projet de cours en cours de construction.</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Accueil />} />
+        <Route path="/partie" element={<Partie />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

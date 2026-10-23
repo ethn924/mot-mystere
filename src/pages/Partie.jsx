@@ -1,6 +1,4 @@
-// Partie : écran principal du jeu.
-// Gère l'état d'une partie : le mot mystère, la proposition en cours, les lignes validées,
-// l'appel au Wiktionnaire, les points et l'enregistrement de la partie finie.
+// Partie : écran principal du jeu. Gère la partie en cours, la grille et l'écran de fin.
 
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -22,83 +20,71 @@ import { verifierMotWiktionnaire } from "../logique/wiktionnaire.js";
 import { enregistrerPartie } from "../logique/scores.js";
 import motsSolutions from "../data/mots-solutions.json";
 
+// Lit la sauvegarde de la partie du jour depuis le navigateur.
+// Retourne { lignes, proposition } ou des valeurs vides si rien n'est enregistré.
+function chargerPartieDuJour(dateDuJour) {
+  const sauvegarde = localStorage.getItem("partieDuJour");
+  if (!sauvegarde) {
+    return { lignes: [], proposition: "" };
+  }
+  try {
+    const donnees = JSON.parse(sauvegarde);
+    if (donnees && donnees.date === dateDuJour) {
+      return {
+        lignes: donnees.lignes || [],
+        proposition: donnees.proposition || "",
+      };
+    }
+  } catch {
+    // Sauvegarde illisible, on recommence une nouvelle partie.
+  }
+  return { lignes: [], proposition: "" };
+}
+
 function Partie() {
-  // proposition : ce que le joueur tape lettre par lettre
-  // motMystere : le mot à trouver (aléatoire ou du jour selon le mode)
-  // lignes : historique des propositions validées avec leurs couleurs
-  // Tous ces états sont initialisés depuis le localStorage si c'est une reprise de partie du jour
+  // Date du jour pour savoir si une sauvegarde du mot du jour est encore valable.
   const dateDuJour = new Date().toLocaleDateString("fr-FR");
 
+  // Mode de jeu : true = mot du jour, false = partie libre.
+  // Choisi sur l'accueil, on ne le modifie pas ici.
   const [modeDuJour] = useState(() => {
     const sauvegarde = localStorage.getItem("modeDuJour");
     return sauvegarde === "true";
   });
 
+  // Le mot mystère à trouver.
   const [motMystere, setMotMystere] = useState(() => {
-    const sauvegardeMode = localStorage.getItem("modeDuJour");
-    if (sauvegardeMode === "true") {
+    if (modeDuJour) {
       return choisirMotDuJour(motsSolutions);
     }
-    return tirerPremierMot();
+    return tirerMotAleatoire(motsSolutions);
   });
 
-  const [lignes, setLignes] = useState(() => {
-    const sauvegardeMode = localStorage.getItem("modeDuJour");
-    if (sauvegardeMode !== "true") {
-      return [];
-    }
-    const sauvegarde = localStorage.getItem("partieDuJour");
-    if (!sauvegarde) {
-      return [];
-    }
-    try {
-      const donnees = JSON.parse(sauvegarde);
-      if (donnees && donnees.date === dateDuJour && donnees.lignes) {
-        return donnees.lignes;
-      }
-    } catch {
-      // Si la sauvegarde est illisible, on commence une nouvelle partie
-    }
-    return [];
-  });
+  // Les lignes déjà jouées (avec leurs couleurs).
+  const sauvegardeLignes = chargerPartieDuJour(dateDuJour);
+  const [lignes, setLignes] = useState(modeDuJour ? sauvegardeLignes.lignes : []);
 
-  const [proposition, setProposition] = useState(() => {
-    const sauvegardeMode = localStorage.getItem("modeDuJour");
-    if (sauvegardeMode !== "true") {
-      return "";
-    }
-    const sauvegarde = localStorage.getItem("partieDuJour");
-    if (!sauvegarde) {
-      return "";
-    }
-    try {
-      const donnees = JSON.parse(sauvegarde);
-      if (donnees && donnees.date === dateDuJour) {
-        return donnees.proposition || "";
-      }
-    } catch {
-      // Si la sauvegarde est illisible, on commence une nouvelle partie
-    }
-    return "";
-  });
+  // La proposition en cours de frappe.
+  const [proposition, setProposition] = useState(
+    modeDuJour ? sauvegardeLignes.proposition : ""
+  );
 
-  // enChargement : bloque les saisies pendant l'appel API
+  // Bloque les saisies pendant l'appel à l'API.
   const [enChargement, setEnChargement] = useState(false);
-  // message : affiche un avis au joueur (mot refusé, dictionnaire indisponible...)
+  // Message affiché au joueur.
   const [message, setMessage] = useState("");
-  // ligneRefusee : déclenche l'animation de tremblement si le mot n'est pas dans le dictionnaire
+  // Déclenche l'animation de tremblement si le mot est refusé.
   const [ligneRefusee, setLigneRefusee] = useState(false);
-  // compteurRefus : change la key de la ligne active pour relancer le tremblement à chaque refus
+  // Force le relancement de l'animation de tremblement à chaque refus.
   const [compteurRefus, setCompteurRefus] = useState(0);
 
-  // tempsDebutPartie : heure de début de la partie (pour calculer le temps de résolution)
-  // on l'initialise dans un effet car Date.now() ne peut pas être appelé pendant le rendu
+  // Heure de début de la partie (pour calculer le temps de résolution).
   const tempsDebutPartie = useRef(null);
 
-  // tempsRestant : compte à rebours avant le prochain mot du jour (minuit)
+  // Compte à rebours avant le prochain mot du jour.
   const [tempsRestant, setTempsRestant] = useState(tempsRestantAvantMinuit());
 
-  // Met à jour le compte à rebours chaque seconde
+  // Met à jour le compte à rebours chaque seconde.
   useEffect(() => {
     const interval = setInterval(() => {
       setTempsRestant(tempsRestantAvantMinuit());
@@ -106,21 +92,18 @@ function Partie() {
     return () => clearInterval(interval);
   }, []);
 
-  // On mémorise l'heure de début de la partie une seule fois
+  // Mémorise l'heure de début de la partie une seule fois.
   useEffect(() => {
     if (tempsDebutPartie.current === null) {
       tempsDebutPartie.current = Date.now();
     }
   }, []);
 
-  // On mémorise le choix du mode dans le navigateur pour la prochaine visite
+  // Sauvegarde la partie du jour à chaque changement.
   useEffect(() => {
-    localStorage.setItem("modeDuJour", String(modeDuJour));
-  }, [modeDuJour]);
-
-  // Sauvegarde la partie du jour à chaque changement (lignes ou proposition)
-  useEffect(() => {
-    if (!modeDuJour) return;
+    if (!modeDuJour) {
+      return;
+    }
     const donnees = {
       date: dateDuJour,
       lignes: lignes,
@@ -129,6 +112,7 @@ function Partie() {
     localStorage.setItem("partieDuJour", JSON.stringify(donnees));
   }, [modeDuJour, dateDuJour, lignes, proposition]);
 
+  // Détermine si la partie est finie.
   const finie = partieEstFinie(lignes);
   let gagne = false;
   if (lignes.length > 0) {
@@ -138,14 +122,14 @@ function Partie() {
   const points = calculerPoints(lignes.length, gagne);
   const statutsLettres = calculerStatutsLettres(lignes);
 
-  // gere toutes les saisies : clavier physique et clavier virtuel
+  // Gère toutes les saisies (clavier physique et clavier virtuel).
   async function traiterTouche(touche) {
-    // on ignore tout si la partie est finie ou si on attend la réponse de l'API
+    // On ignore tout si la partie est finie ou si on attend l'API.
     if (finie || enChargement) {
       return;
     }
 
-    // validation de la ligne complète (touche Entrée)
+    // Validation de la ligne complète (touche Entrée).
     if (touche === "Enter" || touche === "ENTREE") {
       if (proposition.length === LONGUEUR_MOT) {
         setEnChargement(true);
@@ -155,15 +139,17 @@ function Partie() {
         const resultat = await verifierMotWiktionnaire(proposition);
         setEnChargement(false);
 
-        // mot refusé : il ne compte pas comme un essai, la ligne tremble
+        // Mot refusé : il ne compte pas comme un essai, la ligne tremble.
         if (!resultat.valide) {
           setMessage("Ce mot n'est pas dans le dictionnaire.");
           setLigneRefusee(true);
-          setCompteurRefus((c) => c + 1);
+          setCompteurRefus(function (c) {
+            return c + 1;
+          });
           return;
         }
 
-        // si l'API est en panne, on accepte le mot pour ne pas bloquer le joueur
+        // Si l'API est en panne, on accepte le mot pour ne pas bloquer le joueur.
         if (resultat.erreurApi) {
           setMessage("Dictionnaire injoignable, mot accepté par défaut.");
         } else {
@@ -176,22 +162,32 @@ function Partie() {
         setLignes(nouvellesLignes);
         setProposition("");
 
-        // si c'était le dernier coup, on enregistre le score
+        // Si c'était le dernier coup, on enregistre le score.
         if (partieEstFinie(nouvellesLignes)) {
           const partieGagnee = estGagne(couleurs);
-          const pointsObtenus = calculerPoints(nouvellesLignes.length, partieGagnee);
+          const pointsObtenus = calculerPoints(
+            nouvellesLignes.length,
+            partieGagnee
+          );
           const pseudo = localStorage.getItem("pseudo") || "Anonyme";
-          const tempsSecondes = tempsDebutPartie
-            ? Math.floor((Date.now() - tempsDebutPartie) / 1000)
+          const tempsSecondes = tempsDebutPartie.current
+            ? Math.floor((Date.now() - tempsDebutPartie.current) / 1000)
             : 0;
           const modePartie = modeDuJour ? "dujour" : "libre";
-          enregistrerPartie(pseudo, motMystere, nouvellesLignes.length, pointsObtenus, modePartie, tempsSecondes);
+          enregistrerPartie(
+            pseudo,
+            motMystere,
+            nouvellesLignes.length,
+            pointsObtenus,
+            modePartie,
+            tempsSecondes
+          );
         }
       }
       return;
     }
 
-    // suppression de la dernière lettre (touche Retour arrière ou Effacer)
+    // Suppression de la dernière lettre (touche Retour arrière ou Effacer).
     if (touche === "Backspace" || touche === "EFFACER") {
       setMessage("");
       setLigneRefusee(false);
@@ -199,7 +195,7 @@ function Partie() {
       return;
     }
 
-    // ajout d'une lettre à la proposition, si on n'a pas déjà 5 lettres
+    // Ajout d'une lettre à la proposition, si on n'a pas déjà 5 lettres.
     const lettre = normaliserMot(touche);
     if (lettre.length !== 1) {
       return;
@@ -210,10 +206,10 @@ function Partie() {
     setProposition(ajouterLettre(lettre));
   }
 
-  // écoute les touches du clavier physique
+  // Écoute les touches du clavier physique.
   useEffect(() => {
     function surTouche(event) {
-      // on ignore les raccourcis navigateur (Ctrl, Cmd, Alt)
+      // On ignore les raccourcis navigateur (Ctrl, Cmd, Alt).
       if (event.ctrlKey || event.metaKey || event.altKey) {
         return;
       }
@@ -224,7 +220,7 @@ function Partie() {
     return () => window.removeEventListener("keydown", surTouche);
   });
 
-  // remet tout à zéro pour recommencer une nouvelle partie
+  // Remet tout à zéro pour recommencer une nouvelle partie.
   function rejouer() {
     setProposition("");
     setLignes([]);
@@ -234,8 +230,7 @@ function Partie() {
     setMotMystere(tirerMotAleatoire(motsSolutions));
   }
 
-  // Génère le texte de partage avec les couleurs (emoji) sans révéler les lettres
-  // Format : Le Mot Mystère DD/MM · X/6 puis les lignes d'emoji
+  // Génère le texte de partage avec les couleurs (emoji) sans révéler les lettres.
   function genererTextePartage() {
     const aujourdhui = new Date();
     const jour = aujourdhui.getDate().toString().padStart(2, "0");
@@ -262,7 +257,7 @@ function Partie() {
     return texte;
   }
 
-  // Copie le texte de partage dans le presse-papiers
+  // Copie le texte de partage dans le presse-papiers.
   async function partagerResultat() {
     const texte = genererTextePartage();
     try {
@@ -273,6 +268,7 @@ function Partie() {
     }
   }
 
+  // Construit l'écran de fin quand la partie est terminée.
   let ecranFin = null;
   if (finie) {
     let texteResultat = "Bravo, tu as trouvé le mot !";
@@ -314,7 +310,7 @@ function Partie() {
       <h1>Le Mot Mystère</h1>
       <Link to="/" className="bouton-retour">Retour à l'accueil</Link>
 
-      {/* Compte à rebours avant le prochain mot du jour (affiché uniquement en mode du jour) */}
+      {/* Compte à rebours avant le prochain mot du jour (mode du jour uniquement) */}
       {modeDuJour && (
         <p className="compte-a-rebours">
           Prochain mot dans {tempsRestant.heures}h {tempsRestant.minutes}m {tempsRestant.secondes}s
@@ -329,7 +325,7 @@ function Partie() {
       />
 
       {enChargement ? (
-        <p className="message-chargement">Verification dans le dictionnaire...</p>
+        <p className="message-chargement">Vérification dans le dictionnaire...</p>
       ) : null}
 
       {message && !enChargement ? (
@@ -343,16 +339,12 @@ function Partie() {
   );
 }
 
-function tirerPremierMot() {
-  return tirerMotAleatoire(motsSolutions);
-}
-
-// supprime le dernier caractère d'une chaîne
+// Supprime le dernier caractère d'une chaîne.
 function retirerDerniereLettre(valeurActuelle) {
   return valeurActuelle.slice(0, -1);
 }
 
-// ajoute une lettre à la fin si la proposition n'est pas pleine
+// Ajoute une lettre à la fin si la proposition n'est pas pleine.
 function ajouterLettre(lettre) {
   return function ajouterSiPlace(valeurActuelle) {
     if (valeurActuelle.length < LONGUEUR_MOT) {

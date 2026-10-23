@@ -1,14 +1,14 @@
 // wiktionnaire.js : contacte l'API du Wiktionnaire pour vérifier si un mot existe en français.
-// Isole toutes les requêtes réseau dans ce fichier.
+// Toutes les requêtes réseau sont dans ce fichier.
 
 import { normaliserMot } from "./jeu.js";
 
-// En-tête obligatoire pour respecter les conditions d'utilisation du Wiktionnaire
+// En-tête obligatoire demandé par le Wiktionnaire.
 const EN_TETE_API = {
   "Api-User-Agent": "LeMotMystere/1.0 (projet-etudiant@cours.fr)",
 };
 
-// Vérifie si une page donnée du Wiktionnaire possède bien une section "Français"
+// Vérifie si une page du Wiktionnaire a bien une section "Français".
 async function verifierSectionFrancaise(titrePage) {
   const url =
     "https://fr.wiktionary.org/w/api.php?action=parse&page=" +
@@ -22,7 +22,7 @@ async function verifierSectionFrancaise(titrePage) {
     return false;
   }
 
-  // On parcourt les sections de la page pour trouver "Français"
+  // On cherche une section de niveau 2 nommée "Français".
   for (let i = 0; i < donnees.parse.sections.length; i++) {
     const section = donnees.parse.sections[i];
     if (
@@ -36,20 +36,20 @@ async function verifierSectionFrancaise(titrePage) {
   return false;
 }
 
-// Vérifie si une proposition de 5 lettres est un mot français sur le Wiktionnaire
+// Vérifie si une proposition est un mot français sur le Wiktionnaire.
 export async function verifierMotWiktionnaire(proposition) {
   const motNormalise = normaliserMot(proposition);
   const motMinuscule = proposition.toLowerCase();
 
   try {
-    // 1. On teste directement le mot tel qu'il a été tapé
+    // 1. On teste directement le mot tapé (ex: "arbre").
     const existeDirect = await verifierSectionFrancaise(motMinuscule);
     if (existeDirect) {
       return { valide: true, erreurApi: false };
     }
 
-    // 2. Si non trouvé directement, le mot a peut-être des accents (ex: ECOLE -> école).
-    // On utilise list=search du Wiktionnaire pour chercher les titres approchants.
+    // 2. Sinon, le mot a peut-être des accents (ex: "ECOLE" -> "école").
+    // On cherche les titres approchants avec list=search.
     const urlRecherche =
       "https://fr.wiktionary.org/w/api.php?action=query&list=search&srsearch=" +
       encodeURIComponent(motMinuscule) +
@@ -63,7 +63,7 @@ export async function verifierMotWiktionnaire(proposition) {
       listeResultats = donneesRecherche.query.search;
     }
 
-    // On parcourt les résultats pour voir si l'un d'eux correspond à notre mot sans accents
+    // On regarde si un résultat correspond à notre mot sans accents.
     for (let i = 0; i < listeResultats.length; i++) {
       const titreTrouve = listeResultats[i].title;
       if (normaliserMot(titreTrouve) === motNormalise) {
@@ -74,10 +74,10 @@ export async function verifierMotWiktionnaire(proposition) {
       }
     }
 
-    // Le mot n'a pas été trouvé en français
+    // Le mot n'a pas été trouvé en français.
     return { valide: false, erreurApi: false };
   } catch {
-    // Si l'API est indisponible ou hors-ligne, on ne bloque pas la partie
+    // Si l'API ne répond pas, on accepte le mot pour ne pas bloquer le joueur.
     return { valide: true, erreurApi: true };
   }
 }

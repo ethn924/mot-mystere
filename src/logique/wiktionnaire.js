@@ -1,84 +1,39 @@
 // Auteur : Ethan (ethn924) - Le Mot Mystère
-// wiktionnaire.js : contacte l'API du Wiktionnaire pour vérifier si un mot existe en français.
-// Toutes les requêtes réseau sont dans ce fichier.
+// Vérifie qu'un mot existe en français avec UN seul appel à l'API du Wiktionnaire.
 
 import { normaliserMot } from "./jeu.js";
 
-// En-tête obligatoire demandé par le Wiktionnaire.
-const EN_TETE_API = {
-  "Api-User-Agent": "LeMotMystere/1.0 (projet-etudiant@cours.fr)",
-};
-
-// Vérifie si une page du Wiktionnaire a bien une section "Français".
-async function verifierSectionFrancaise(titrePage) {
-  const url =
-    "https://fr.wiktionary.org/w/api.php?action=parse&page=" +
-    encodeURIComponent(titrePage) +
-    "&prop=sections&format=json&origin=*";
-
-  const reponse = await fetch(url, { headers: EN_TETE_API });
-  const donnees = await reponse.json();
-
-  if (!donnees.parse || !donnees.parse.sections) {
-    return false;
-  }
-
-  // On cherche une section de niveau 2 nommée "Français".
-  for (let i = 0; i < donnees.parse.sections.length; i++) {
-    const section = donnees.parse.sections[i];
-    if (
-      section.level === "2" &&
-      (section.line.includes("Français") || section.anchor === "Français")
-    ) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-// Vérifie si une proposition est un mot français sur le Wiktionnaire.
+// Renvoie { valide, erreurApi }. async car on doit attendre la réponse d'Internet.
 export async function verifierMotWiktionnaire(proposition) {
-  const motNormalise = normaliserMot(proposition);
-  const motMinuscule = proposition.toLowerCase();
+  // Pages dont le titre est le mot ET rangées dans la catégorie "français".
+  // La recherche ignore les accents : "ecole" trouve "école".
+  const recherche = "intitle:" + proposition.toLowerCase() + " incategory:français";
 
+  // origin=* : sans ça le navigateur bloque la réponse (CORS).
+  // encodeURIComponent : encode les espaces et le "ç" pour l'adresse.
+  const url =
+    "https://fr.wiktionary.org/w/api.php?action=query&list=search&format=json&origin=*&srsearch=" +
+    encodeURIComponent(recherche);
+
+  // En gros on demande au Wiktionnaire s'il a une page en français pour ce mot.
+  // await = on attend qu'il réponde, .json() = on transforme sa réponse en objet,
+  // et après on regarde si un des titres trouvés c'est bien notre mot.
+  // Si l'API plante (catch), on accepte le mot, sinon le joueur est bloqué.
   try {
-    // 1. On teste directement le mot tapé (ex: "arbre").
-    const existeDirect = await verifierSectionFrancaise(motMinuscule);
-    if (existeDirect) {
-      return { valide: true, erreurApi: false };
-    }
+    // Api-User-Agent : le Wiktionnaire demande qu'on dise qui l'appelle.
+    const reponse = await fetch(url, {
+      headers: { "Api-User-Agent": "LeMotMystere/1.0 (projet-etudiant@cours.fr)" },
+    });
+    const donnees = await reponse.json();
+    const resultats = donnees.query.search;
 
-    // 2. Sinon, le mot a peut-être des accents (ex: "ECOLE" -> "école").
-    // On cherche les titres approchants avec list=search.
-    const urlRecherche =
-      "https://fr.wiktionary.org/w/api.php?action=query&list=search&srsearch=" +
-      encodeURIComponent(motMinuscule) +
-      "&format=json&origin=*";
-
-    const reponseRecherche = await fetch(urlRecherche, { headers: EN_TETE_API });
-    const donneesRecherche = await reponseRecherche.json();
-
-    let listeResultats = [];
-    if (donneesRecherche.query && donneesRecherche.query.search) {
-      listeResultats = donneesRecherche.query.search;
-    }
-
-    // On regarde si un résultat correspond à notre mot sans accents.
-    for (let i = 0; i < listeResultats.length; i++) {
-      const titreTrouve = listeResultats[i].title;
-      if (normaliserMot(titreTrouve) === motNormalise) {
-        const estFrancais = await verifierSectionFrancaise(titreTrouve);
-        if (estFrancais) {
-          return { valide: true, erreurApi: false };
-        }
+    for (let i = 0; i < resultats.length; i++) {
+      if (normaliserMot(resultats[i].title) === normaliserMot(proposition)) {
+        return { valide: true, erreurApi: false };
       }
     }
-
-    // Le mot n'a pas été trouvé en français.
     return { valide: false, erreurApi: false };
   } catch {
-    // Si l'API ne répond pas, on accepte le mot pour ne pas bloquer le joueur.
     return { valide: true, erreurApi: true };
   }
 }

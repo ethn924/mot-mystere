@@ -31,10 +31,15 @@ function chargerPartieDuJour(dateDuJour) {
   try {
     const donnees = JSON.parse(sauvegarde);
     if (donnees && donnees.date === dateDuJour) {
-      return {
-        lignes: donnees.lignes || [],
-        proposition: donnees.proposition || "",
-      };
+      let lignes = donnees.lignes;
+      if (!lignes) {
+        lignes = [];
+      }
+      let proposition = donnees.proposition;
+      if (!proposition) {
+        proposition = "";
+      }
+      return { lignes: lignes, proposition: proposition };
     }
   } catch {
     // Sauvegarde illisible, on recommence une nouvelle partie.
@@ -53,7 +58,7 @@ function Partie() {
     return sauvegarde === "true";
   });
 
-  // Le mot mystère à trouver.
+  // La fonction dans useState n'est lancée qu'au premier affichage, donc le mot ne change pas.
   const [motMystere, setMotMystere] = useState(() => {
     if (modeDuJour) {
       return choisirMotDuJour(motsSolutions);
@@ -61,35 +66,36 @@ function Partie() {
     return tirerMotAleatoire(motsSolutions);
   });
 
-  // Les lignes déjà jouées (avec leurs couleurs).
-  const sauvegardeLignes = chargerPartieDuJour(dateDuJour);
-  const [lignes, setLignes] = useState(modeDuJour ? sauvegardeLignes.lignes : []);
+  // En mode du jour, on reprend la partie sauvegardée
+  let lignesDepart = [];
+  let propositionDepart = "";
+  if (modeDuJour) {
+    const sauvegarde = chargerPartieDuJour(dateDuJour);
+    lignesDepart = sauvegarde.lignes;
+    propositionDepart = sauvegarde.proposition;
+  }
+  const [lignes, setLignes] = useState(lignesDepart);
+  const [proposition, setProposition] = useState(propositionDepart);
 
-  // La proposition en cours de frappe.
-  const [proposition, setProposition] = useState(
-    modeDuJour ? sauvegardeLignes.proposition : ""
-  );
-
-  // Bloque les saisies pendant l'appel à l'API.
+  // Vrai pendant l'appel à l'API : bloque les saisies
   const [enChargement, setEnChargement] = useState(false);
-  // Message affiché au joueur.
   const [message, setMessage] = useState("");
-  // Déclenche l'animation de tremblement si le mot est refusé.
+  // Tremblement de la ligne si le mot est refusé (le compteur relance l'animation)
   const [ligneRefusee, setLigneRefusee] = useState(false);
-  // Force le relancement de l'animation de tremblement à chaque refus.
   const [compteurRefus, setCompteurRefus] = useState(0);
 
   // Heure de début de la partie (pour calculer le temps de résolution).
+  // useRef garde une valeur sans réafficher la page quand elle change.
   const tempsDebutPartie = useRef(null);
 
   // Compte à rebours avant le prochain mot du jour.
   const [tempsRestant, setTempsRestant] = useState(tempsRestantAvantMinuit());
 
-  // Met à jour le compte à rebours chaque seconde.
   useEffect(() => {
     const interval = setInterval(() => {
       setTempsRestant(tempsRestantAvantMinuit());
     }, 1000);
+    // Arrête le minuteur quand on quitte la page.
     return () => clearInterval(interval);
   }, []);
 
@@ -113,7 +119,7 @@ function Partie() {
     localStorage.setItem("partieDuJour", JSON.stringify(donnees));
   }, [modeDuJour, dateDuJour, lignes, proposition]);
 
-  // Détermine si la partie est finie.
+  // Ces valeurs sont recalculées à chaque affichage à partir des lignes.
   const finie = partieEstFinie(lignes);
   let gagne = false;
   if (lignes.length > 0) {
@@ -125,12 +131,10 @@ function Partie() {
 
   // Gère toutes les saisies (clavier physique et clavier virtuel).
   async function traiterTouche(touche) {
-    // On ignore tout si la partie est finie ou si on attend l'API.
     if (finie || enChargement) {
       return;
     }
 
-    // Validation de la ligne complète (touche Entrée).
     if (touche === "Enter" || touche === "ENTREE") {
       if (proposition.length === LONGUEUR_MOT) {
         setEnChargement(true);
@@ -170,11 +174,18 @@ function Partie() {
             nouvellesLignes.length,
             partieGagnee
           );
-          const pseudo = localStorage.getItem("pseudo") || "Anonyme";
-          const tempsSecondes = tempsDebutPartie.current
-            ? Math.floor((Date.now() - tempsDebutPartie.current) / 1000)
-            : 0;
-          const modePartie = modeDuJour ? "dujour" : "libre";
+          let pseudo = localStorage.getItem("pseudo");
+          if (!pseudo) {
+            pseudo = "Anonyme";
+          }
+          let tempsSecondes = 0;
+          if (tempsDebutPartie.current) {
+            tempsSecondes = Math.floor((Date.now() - tempsDebutPartie.current) / 1000);
+          }
+          let modePartie = "libre";
+          if (modeDuJour) {
+            modePartie = "dujour";
+          }
           enregistrerPartie(
             pseudo,
             motMystere,
@@ -217,11 +228,12 @@ function Partie() {
       traiterTouche(event.key);
     }
 
+    // Pas de tableau de dépendances : l'écouteur est remis à chaque affichage
+    // pour toujours utiliser la dernière version de traiterTouche.
     window.addEventListener("keydown", surTouche);
     return () => window.removeEventListener("keydown", surTouche);
   });
 
-  // Remet tout à zéro pour recommencer une nouvelle partie.
   function rejouer() {
     setProposition("");
     setLignes([]);
@@ -258,7 +270,7 @@ function Partie() {
     return texte;
   }
 
-  // Copie le texte de partage dans le presse-papiers.
+  // Copie le résultat dans le presse-papiers (await car le navigateur peut refuser).
   async function partagerResultat() {
     const texte = genererTextePartage();
     try {
@@ -269,12 +281,21 @@ function Partie() {
     }
   }
 
-  // Construit l'écran de fin quand la partie est terminée.
   let ecranFin = null;
   if (finie) {
     let texteResultat = "Bravo, tu as trouvé le mot !";
     if (!gagne) {
       texteResultat = "Perdu. Le mot était : " + motMystere;
+    }
+
+    // Mot du jour : pas de bouton Rejouer, une seule partie par jour
+    let finDuJour = (
+      <button type="button" onClick={rejouer}>
+        Rejouer
+      </button>
+    );
+    if (modeDuJour) {
+      finDuJour = <p>Partie du jour déjà terminée. Revenez demain pour un nouveau mot.</p>;
     }
 
     const lienWiktionnaire =
@@ -290,13 +311,7 @@ function Partie() {
           </a>
         </p>
         <p>Points : {points}</p>
-        {modeDuJour ? (
-          <p>Partie du jour déjà terminée. Revenez demain pour un nouveau mot.</p>
-        ) : (
-          <button type="button" onClick={rejouer}>
-            Rejouer
-          </button>
-        )}
+        {finDuJour}
         <button type="button" onClick={partagerResultat}>
           Partager le résultat
         </button>
@@ -306,17 +321,29 @@ function Partie() {
     );
   }
 
+  let compteARebours = null;
+  if (modeDuJour) {
+    compteARebours = (
+      <p className="compte-a-rebours">
+        Prochain mot dans {tempsRestant.heures}h {tempsRestant.minutes}m {tempsRestant.secondes}s
+      </p>
+    );
+  }
+
+  // Pendant l'appel à l'API on affiche "Vérification...", sinon le message s'il y en a un
+  let zoneMessage = null;
+  if (enChargement) {
+    zoneMessage = <p className="message-chargement">Vérification dans le dictionnaire...</p>;
+  } else if (message) {
+    zoneMessage = <p className="message-avertissement">{message}</p>;
+  }
+
   return (
     <main className="page">
       <h1>Le Mot Mystère</h1>
       <Link to="/" className="bouton-retour">Retour à l'accueil</Link>
 
-      {/* Compte à rebours avant le prochain mot du jour (mode du jour uniquement) */}
-      {modeDuJour && (
-        <p className="compte-a-rebours">
-          Prochain mot dans {tempsRestant.heures}h {tempsRestant.minutes}m {tempsRestant.secondes}s
-        </p>
-      )}
+      {compteARebours}
 
       <Grille
         lignesValidees={lignes}
@@ -325,13 +352,7 @@ function Partie() {
         compteurRefus={compteurRefus}
       />
 
-      {enChargement ? (
-        <p className="message-chargement">Vérification dans le dictionnaire...</p>
-      ) : null}
-
-      {message && !enChargement ? (
-        <p className="message-avertissement">{message}</p>
-      ) : null}
+      {zoneMessage}
 
       <Clavier surTouche={traiterTouche} statutsLettres={statutsLettres} />
 
@@ -340,13 +361,13 @@ function Partie() {
   );
 }
 
-// Supprime le dernier caractère d'une chaîne.
 function retirerDerniereLettre(valeurActuelle) {
   return valeurActuelle.slice(0, -1);
 }
 
 // Ajoute une lettre à la fin si la proposition n'est pas pleine.
 function ajouterLettre(lettre) {
+  // On renvoie une fonction car setProposition la lance avec la valeur actuelle.
   return function ajouterSiPlace(valeurActuelle) {
     if (valeurActuelle.length < LONGUEUR_MOT) {
       return valeurActuelle + lettre;

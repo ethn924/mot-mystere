@@ -46,10 +46,9 @@ Quand le joueur a 5 lettres et appuie sur `Entrée` :
 1. **Verrouillage** : je passe `enChargement` à `true` et j'affiche « Vérification dans le dictionnaire... ». Les touches sont bloquées pour empêcher de valider deux fois.
 2. **Appel réseau** : `Partie.jsx` appelle la fonction `verifierMotWiktionnaire(proposition)` située dans `src/logique/wiktionnaire.js`.
 3. **Dans `wiktionnaire.js`** :
-   - Je fais un `fetch` sur l'API MediaWiki : `https://fr.wiktionary.org/w/api.php?action=parse&page=...&prop=sections&format=json&origin=*`.
+   - Je fais un seul `fetch` sur l'API MediaWiki : `https://fr.wiktionary.org/w/api.php?action=query&list=search&format=json&origin=*&srsearch=intitle:<mot> incategory:français`.
    - J'envoie l'en-tête obligatoire `Api-User-Agent`.
-   - J'inspecte les sections retournées pour m'assurer qu'il existe bien une section `level: "2"` nommée `"Français"`.
-   - Si le mot n'est pas trouvé directement (ex: joueur ayant tapé `ECOLE`), je fais une recherche avec `action=query&list=search&srsearch=ecole` pour trouver la page accentuée `école` et vérifier qu'elle est française.
+   - La recherche ignore les accents (`ecole` trouve `école`), je compare chaque titre trouvé au mot tapé avec `normaliserMot()`.
    - Si l'API est en panne ou hors-ligne, j'attrape l'erreur et je laisse le mot valide pour ne pas bloquer le jeu.
 4. **Retour du résultat à `Partie.jsx`** :
    - **Si le mot est invalide (refusé)** : j'active `ligneRefusee = true`, j'incrémente `compteurRefus` (ce qui relance l'animation CSS de tremblement sur la grille), et j'affiche « Ce mot n'est pas dans le dictionnaire. ». **La tentative n'est pas décomptée.**
@@ -102,8 +101,7 @@ Après chaque ligne ajoutée :
    - C'est **ce fichier** et lui seul qui contacte l'API Wiktionnaire.
    - Contient `verifierMotWiktionnaire(proposition)`.
    - Utilise `origin=*` et `Api-User-Agent`.
-   - Vérifie la section `"Français"`.
-   - Fait la recherche pour les mots avec accents tapés sans accent.
+   - Fait une seule recherche `list=search` (`intitle:` + `incategory:français`), qui retrouve aussi les mots accentués tapés sans accent.
 
 3. **`scores.js`** :
    - Gère le stockage dans le `localStorage`.
@@ -135,6 +133,6 @@ Après chaque ligne ajoutée :
 - **Pourquoi `origin=*` dans les requêtes Wiktionnaire ?**  
   *Réponse* : Pour autoriser les requêtes cross-origin (CORS) depuis le navigateur, sinon la réponse est bloquée par la sécurité du navigateur.
 - **Comment gérez-vous un mot avec accents tapé sans accent (ex: ECOLE) ?**  
-  *Réponse* : Si la page directe `ecole` n'est pas un mot français, j'utilise l'API de recherche `action=query&list=search` qui me renvoie `école`. Je vérifie que cette page a une section française de niveau 2, et je valide le mot.
+  *Réponse* : Je fais une seule recherche `list=search` avec `intitle:ecole incategory:français`. Elle ignore les accents et renvoie `école`, je compare le titre au mot tapé avec `normaliserMot()` et je valide le mot.
 - **Pourquoi deux passes dans `comparer()` ?**  
   *Réponse* : Pour les lettres en double (ex: ARBRE et ERRER). La première passe marque tous les verts et neutralise les lettres correspondantes. La deuxième passe s'occupe des jaunes avec seulement les lettres restantes du mot mystère.

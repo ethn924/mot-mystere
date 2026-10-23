@@ -4,16 +4,17 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-// récupère le pseudo déjà enregistré dans le navigateur, ou une chaîne vide si c'est la première visite
+// Pseudo déjà enregistré, ou chaîne vide à la première visite
 function lirePseudoSauve() {
   const pseudoSauve = localStorage.getItem("pseudo");
-  if (pseudoSauve === null) {
+  if (!pseudoSauve) {
     return "";
   }
   return pseudoSauve;
 }
 
 function Accueil() {
+  // useState garde une valeur et réaffiche la page quand elle change.
   const [pseudo, setPseudo] = useState(lirePseudoSauve);
   // modeDuJour : true pour le mot du jour, false pour une partie libre
   const [modeDuJour, setModeDuJour] = useState(false);
@@ -27,9 +28,10 @@ function Accueil() {
     setModeDuJour(event.target.value === "dujour");
   }
 
+  // preventDefault empêche le formulaire de recharger la page.
+  // On range pseudo et mode dans le localStorage pour que la page Partie les lise.
   function lancerPartie(event) {
     event.preventDefault();
-    // on mémorise le pseudo et le mode pour la prochaine visite
     localStorage.setItem("pseudo", pseudo);
     localStorage.setItem("modeDuJour", String(modeDuJour));
     navigate("/partie");
@@ -44,7 +46,7 @@ function Accueil() {
         </p>
       </header>
 
-      {/* petits rappels visuels des trois couleurs pour le joueur */}
+      {/* Rappel des trois couleurs */}
       <section className="cartes-apercu" aria-label="Aperçu des règles">
         <div className="carte-mini">
           <span className="pastille pastille-verte"></span>
@@ -69,7 +71,6 @@ function Accueil() {
         </div>
       </section>
 
-      {/* formulaire pour entrer son pseudo et démarrer */}
       <section className="zone-lancement">
         <form onSubmit={lancerPartie}>
           <label htmlFor="pseudo">Choisis ton pseudo pour le classement</label>
@@ -110,7 +111,6 @@ function Accueil() {
         </form>
       </section>
 
-      {/* liens vers les autres pages */}
       <footer className="accueil-pied">
         <nav className="nav-accueil" aria-label="Menu principal">
           <Link to="/scores">

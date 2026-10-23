@@ -25,7 +25,7 @@ Ethan ([@ethn924](https://github.com/ethn924)). Projet réalisé seul, sans bin�
 - Le pseudo est rangé dans `localStorage`, il revient au prochain passage.
 - La partie est sur `/partie`, l’accueil sur `/`.
 - Grille 6 lignes × 5 cases.
-- Mot mystère tiré au hasard dans `src/data/mots-solutions.json` (300 mots).
+- Mot mystère tiré au hasard dans `src/data/mots-solutions.json` (environ 300 mots).
 - Saisie au clavier, Retour arrière, Entrée pour valider une ligne complète.
 - Couleurs vert / jaune / gris, y compris quand une lettre est en double.
 - Victoire et défaite. En cas de défaite le mot s’affiche.
@@ -80,7 +80,7 @@ npm run lint
 npm run build
 ```
 
-Uniquement React, React Router et Vite en dépendances de production. Les outils de test (Vitest, Testing Library, jsdom) ont été ajoutés et configurés pour anticiper les tests automatisés demandés au palier 4, mais ils ne sont pas encore utilisés.
+Uniquement React, React Router et Vite en dépendances de production. Les outils de test (Vitest, Testing Library, jsdom) ont été installés pour anticiper les tests automatisés demandés au palier 4, mais ils ne sont pas encore utilisés.
 
 ## Design et interface
 
@@ -99,7 +99,6 @@ Le dossier `docs/` contient mes fiches, chacune commence par la raison de son ex
 | [1-structure-du-projet.md](docs/1-structure-du-projet.md) | Organisation des dossiers et rôle de chaque fonction |
 | [2-deroulement-d-une-partie.md](docs/2-deroulement-d-une-partie.md) | Ce qui se passe dans le code, de l'accueil à la fin de partie |
 | [3-difficultes-techniques.md](docs/3-difficultes-techniques.md) | Les problèmes rencontrés et leurs solutions |
-| [4-preparation-oral.md](docs/4-preparation-oral.md) | Résumé par fichier et réponses aux questions probables |
 ## Organisation
 
 ```text
@@ -115,19 +114,10 @@ src/
 
 ## Difficultés rencontrées et solutions
 
-Franchement, j'ai passé pas mal de temps sur plusieurs points du sujet où je me suis pris la tête avant de trouver la bonne approche. J'ai consigné les galères les plus techniques dans [docs/3-difficultes-techniques.md](docs/3-difficultes-techniques.md), avec ce qui m'a vraiment semblé complexe et comment je m'en suis sorti.
+Le détail est dans [docs/3-difficultes-techniques.md](docs/3-difficultes-techniques.md).
 
-1. **Le piège des lettres en double dans `comparer()`** :  
-   Au début, je voulais faire une seule boucle simple pour colorer les lettres au fur et à mesure. Grosse erreur : sur un mot comme ARBRE avec une proposition ERRER, ça me mettait trois R jaunes alors qu'il n'y en a que deux dans le mot. J'ai dû tout poser sur papier et séparer en 2 boucles : d'abord tous les verts (et je marque les lettres consommées à `null`), et ensuite seulement les jaunes avec ce qui reste de disponible.
-
-2. **L'écouteur d'événement `keydown` et l'état périmé** :  
-   Un vrai casse-tête au début : quand j'appuyais sur Entrée, le composant validait une chaîne vide ou l'ancienne lettre tapée. J'ai compris que la fonction dans `addEventListener` gardait la référence de la première valeur du state. J'ai dû faire attention aux dépendances du `useEffect` et m'assurer de bien nettoyer avec `removeEventListener` pour ne pas empiler 15 écouteurs à chaque touche.
-
-3. **Les requêtes Wiktionnaire et les mots sans accents** :  
-   Deux galères ici. D'abord l'erreur CORS : l'API refusait de répondre dans le navigateur tant que je n'avais pas ajouté `origin=*` dans l'URL. Ensuite, je tape toujours sans accent au clavier (ex: `ECOLE`), mais la page brute sur le Wiktionnaire est titrée `école`. La requête directe échouait pour rien. J'ai résolu ça en utilisant `list=search` pour récupérer les titres approchants, puis en vérifiant que le mot normalisé correspondait bien et qu'il possédait une section de langue française (`level: "2"`).
-
-4. **Rejouer l'animation de tremblement CSS** :  
-   Quand un mot était refusé une première fois, la classe CSS `.ligne-refusee` se mettait bien et la ligne tremblait. Mais si je réessayais un deuxième mot faux tout de suite après, la classe était déjà là, donc le navigateur ne rejouait pas l'animation. J'ai suivi l'indice du sujet en mettant un simple compteur de refus dans la prop `key` de la ligne active : changer la clé force React à remonter la ligne, ce qui relance l'animation à chaque refus.
-
-5. **La synchronisation des couleurs du clavier virtuel** :  
-   Au début, je mettais à jour la couleur d'une touche dès qu'une lettre était jouée. Mais si une lettre était jaune au tour 1 puis devenait verte au tour 2, il ne fallait surtout pas qu'elle repasse au jaune ou au gris au tour 3. J'ai réglé ça dans `calculerStatutsLettres()` avec une règle de priorité stricte : le vert écrase tout et ne peut plus jamais être rétrogradé, le jaune ne s'applique que si la lettre n'est pas déjà verte, et le gris seulement si la lettre n'a jamais été jaune ni verte.
+1. **Lettres en double dans `comparer()`** : deux boucles, d'abord les verts, puis les jaunes avec les lettres restantes.
+2. **Écouteur `keydown` et état périmé** : bonnes dépendances du `useEffect` et `removeEventListener` au nettoyage.
+3. **Wiktionnaire et accents** : `origin=*` pour le CORS et une recherche `list=search` pour retrouver les mots accentués.
+4. **Animation de tremblement** : un compteur de refus dans la `key` de la ligne pour la relancer.
+5. **Couleurs du clavier** : priorité vert > jaune > gris dans `calculerStatutsLettres()`.

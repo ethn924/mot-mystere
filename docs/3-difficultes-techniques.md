@@ -31,6 +31,8 @@ J'ai résolu ça en deux étapes :
 
 Il faut aussi ajouter `origin=*` dans l'URL sinon le navigateur bloque la réponse (CORS), et envoyer l'en-tête `Api-User-Agent` comme demandé par Wikimedia.
 
+Par la suite, j'ai simplifié cette vérification en un seul appel (`list=search` avec `intitle:` et `incategory:français`), voir `PLAN_IMPL.md`.
+
 ## 4. L'animation de tremblement qui ne se relance pas
 
 Quand un mot est refusé, j'ajoute une classe CSS `ligne-refusee` pour faire trembler la ligne. Mais si le joueur enchaîne deux mots refusés, la classe est déjà là et l'animation ne se rejoue pas.

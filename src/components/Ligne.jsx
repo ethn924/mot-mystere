@@ -10,13 +10,11 @@ function Ligne({ mot, couleurs, estRefusee }) {
   if (!couleursLigne) {
     couleursLigne = [];
   }
-
   let motLigne = mot;
   if (!motLigne) {
     motLigne = "";
   }
 
-  // On fabrique les 5 cases une par une, avec l'indice pour le délai d'animation
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     listeLettre.push(
       <CaseLettre
@@ -28,10 +26,10 @@ function Ligne({ mot, couleurs, estRefusee }) {
     );
   }
 
-  // Si le mot a été refusé par le dictionnaire, on ajoute la classe pour faire trembler la ligne
+  // Mot refusé par le dictionnaire : la ligne tremble
   let classeLigne = "ligne";
   if (estRefusee) {
-    classeLigne = classeLigne + " ligne-refusee";
+    classeLigne = "ligne ligne-refusee";
   }
 
   return (

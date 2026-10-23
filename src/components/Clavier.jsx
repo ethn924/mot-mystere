@@ -1,6 +1,5 @@
 // Clavier : clavier virtuel AZERTY à l'écran.
 // Les touches se colorent selon ce qu'on sait déjà des lettres (vert > jaune > gris).
-// Le clavier physique est aussi géré ici via un écouteur keydown.
 
 const DISPOSITION_TOUCHES = [
   ["A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -8,6 +7,8 @@ const DISPOSITION_TOUCHES = [
   ["ENTREE", "W", "X", "C", "V", "B", "N", "EFFACER"],
 ];
 
+// surTouche : fonction appelée au clic (vient de Partie).
+// statutsLettres : la couleur déjà connue de chaque lettre, ex { A: "vert" }.
 function Clavier({ surTouche, statutsLettres }) {
   const rangeesAffichees = [];
 
@@ -19,30 +20,25 @@ function Clavier({ surTouche, statutsLettres }) {
       const valeur = rangee[t];
       let classeTouche = "touche";
 
-      // ENTREE et EFFACER sont des touches spéciales, pas des lettres
       if (valeur === "ENTREE" || valeur === "EFFACER") {
         classeTouche = classeTouche + " touche-speciale";
-      } else {
-        // On applique la couleur connue pour cette lettre (vert, jaune ou gris)
-        const statut = statutsLettres[valeur];
-        if (statut === "vert") {
-          classeTouche = classeTouche + " touche-verte";
-        } else if (statut === "jaune") {
-          classeTouche = classeTouche + " touche-jaune";
-        } else if (statut === "gris") {
-          classeTouche = classeTouche + " touche-grise";
-        }
+      } else if (statutsLettres[valeur] === "vert") {
+        classeTouche = classeTouche + " touche-verte";
+      } else if (statutsLettres[valeur] === "jaune") {
+        classeTouche = classeTouche + " touche-jaune";
+      } else if (statutsLettres[valeur] === "gris") {
+        classeTouche = classeTouche + " touche-grise";
       }
 
-      // EFFACER s'affiche avec le symbole de suppression
       let libelle = valeur;
       if (valeur === "EFFACER") {
-        libelle = "\u232B"; // Symbole de suppression !
+        libelle = "\u232B"; // symbole de la touche effacer
       }
 
       touchesRangee.push(
         <button
           type="button"
+          // React a besoin d'une key unique pour chaque élément d'une liste.
           key={valeur}
           className={classeTouche}
           onClick={() => surTouche(valeur)}

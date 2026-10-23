@@ -1,6 +1,7 @@
 // Auteur : Ethan (ethn924) - Le Mot Mystère
 // scores.js : gère l'enregistrement des parties et des statistiques dans le localStorage.
 
+// Noms des "cases" du localStorage où on range les données.
 const CLE_SCORES = "scores_mot_mystere";
 const CLE_STATS = "stats_mot_mystere";
 
@@ -11,6 +12,7 @@ export function lireScores() {
     return [];
   }
   try {
+    // Le localStorage ne stocke que du texte : JSON.parse le remet en tableau.
     const tableau = JSON.parse(texte);
     if (Array.isArray(tableau)) {
       return tableau;
@@ -24,40 +26,51 @@ export function lireScores() {
 // Lit seulement les parties du mot du jour.
 export function lireScoresDuJour() {
   const tousLesScores = lireScores();
-  const seulementDuJour = [];
+  const scoresDuJour = [];
   for (let i = 0; i < tousLesScores.length; i++) {
     if (tousLesScores[i].mode === "dujour") {
-      seulementDuJour.push(tousLesScores[i]);
+      scoresDuJour.push(tousLesScores[i]);
     }
   }
-  return seulementDuJour;
+  return scoresDuJour;
 }
 
 // Lit seulement les parties en mode libre.
 export function lireScoresGeneraux() {
   const tousLesScores = lireScores();
-  const seulementGeneraux = [];
+  const scoresLibres = [];
   for (let i = 0; i < tousLesScores.length; i++) {
     if (tousLesScores[i].mode !== "dujour") {
-      seulementGeneraux.push(tousLesScores[i]);
+      scoresLibres.push(tousLesScores[i]);
     }
   }
-  return seulementGeneraux;
+  return scoresLibres;
 }
 
 // Enregistre une nouvelle partie terminée dans le tableau des scores.
 export function enregistrerPartie(pseudo, mot, nombreEssais, points, mode, temps) {
   const scores = lireScores();
+
+  // Valeurs par défaut si une information manque
+  if (!pseudo) {
+    pseudo = "Anonyme";
+  }
+  if (!mode) {
+    mode = "libre";
+  }
+  if (!temps) {
+    temps = 0;
+  }
   const dateDuJour = new Date().toLocaleDateString("fr-FR");
 
   const nouvellePartie = {
-    pseudo: pseudo || "Anonyme",
+    pseudo: pseudo,
     mot: mot,
     essais: nombreEssais,
     points: points,
     date: dateDuJour,
-    mode: mode || "libre",
-    temps: temps || 0,
+    mode: mode,
+    temps: temps,
   };
 
   scores.push(nouvellePartie);
@@ -70,11 +83,9 @@ export function enregistrerPartie(pseudo, mot, nombreEssais, points, mode, temps
     return a.essais - b.essais;
   });
 
-  // Garde seulement les 10 meilleurs.
   const top10 = scores.slice(0, 10);
   localStorage.setItem(CLE_SCORES, JSON.stringify(top10));
 
-  // Met à jour les statistiques personnelles du joueur.
   mettreAJourStats(points > 0, nombreEssais, points);
 }
 
@@ -101,6 +112,8 @@ export function lireStats() {
   }
 }
 
+// Ajoute la partie aux statistiques : parties, victoires, série, points.
+// Une défaite remet la série en cours à 0.
 function mettreAJourStats(gagne, nombreEssais, points) {
   const stats = lireStats();
   stats.partiesJouees = stats.partiesJouees + 1;

@@ -1,6 +1,5 @@
 // Auteur : Ethan (ethn924) - Le Mot Mystère
 // Logique du jeu : règles, comparaison des lettres, calcul des points et mot du jour.
-// Rien d'affichage ici, tout est séparé de React pour rester facile à comprendre.
 
 export const NOMBRE_ESSAIS = 6;
 export const LONGUEUR_MOT = 5;
@@ -22,12 +21,8 @@ export function normaliserMot(mot) {
   return resultat;
 }
 
-// Choisit un mot au hasard dans la liste fournie.
 export function tirerMotAleatoire(listeMots) {
-  let random = Math.random();
-  random = random * listeMots.length;
-  random = Math.floor(random);
-  return listeMots[random];
+  return listeMots[Math.floor(Math.random() * listeMots.length)];
 }
 
 // Compare la proposition au mot mystère : "vert", "jaune" ou "gris" pour chaque lettre.
@@ -77,7 +72,6 @@ export function comparer(motMystere, proposition) {
   return couleurs;
 }
 
-// Retourne vrai si toutes les lettres sont vertes.
 export function estGagne(couleurs) {
   for (let i = 0; i < couleurs.length; i++) {
     if (couleurs[i] !== "vert") {
@@ -87,12 +81,8 @@ export function estGagne(couleurs) {
   return true;
 }
 
-// Retourne vrai si le joueur a utilisé tous ses essais sans gagner.
 export function estPerdu(nombreLignes, gagne) {
-  if (gagne) {
-    return false;
-  }
-  return nombreLignes >= NOMBRE_ESSAIS;
+  return !gagne && nombreLignes >= NOMBRE_ESSAIS;
 }
 
 // Retourne vrai si la partie est terminée (gagnée ou perdue).
@@ -107,31 +97,16 @@ export function partieEstFinie(lignes) {
   return gagne || perdu;
 }
 
-// Calcule les points selon le nombre d'essais.
 // 600 pour 1 essai, 500 pour 2, ..., 100 pour 6, 0 si perdu.
 export function calculerPoints(nombreEssais, gagne) {
   if (!gagne) {
     return 0;
   }
-  if (nombreEssais === 1) {
-    return 600;
+  if (nombreEssais < 1 || nombreEssais > NOMBRE_ESSAIS) {
+    return 0;
   }
-  if (nombreEssais === 2) {
-    return 500;
-  }
-  if (nombreEssais === 3) {
-    return 400;
-  }
-  if (nombreEssais === 4) {
-    return 300;
-  }
-  if (nombreEssais === 5) {
-    return 200;
-  }
-  if (nombreEssais === 6) {
-    return 100;
-  }
-  return 0;
+  // 1 essai -> (7 - 1) * 100 = 600 ; 6 essais -> (7 - 6) * 100 = 100
+  return (7 - nombreEssais) * 100;
 }
 
 // Calcule la couleur de chaque touche du clavier virtuel.
@@ -154,7 +129,7 @@ export function calculerStatutsLettres(lignes) {
 
       if (couleur === "vert") {
         statuts[lettre] = "vert";
-      } else if (couleur === "jaune" && statutActuel !== "vert") {
+      } else if (couleur === "jaune") {
         statuts[lettre] = "jaune";
       } else if (couleur === "gris" && !statutActuel) {
         statuts[lettre] = "gris";
@@ -197,7 +172,6 @@ export function choisirMotDuJour(listeMots) {
 }
 
 // Calcule le temps restant avant minuit à Paris (prochain mot du jour).
-// Retourne un objet avec heures, minutes et secondes.
 export function tempsRestantAvantMinuit() {
   // Heure actuelle à Paris, ex : "14:05:32".
   const heureParis = new Date().toLocaleTimeString("fr-FR", { timeZone: FUSEAU });

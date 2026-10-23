@@ -7,7 +7,6 @@ import { lireStats } from "../logique/scores.js";
 function Stats() {
   const stats = lireStats();
 
-  // pourcentage de victoires arrondi à l'entier
   let pourcentageVictoires = 0;
   if (stats.partiesJouees > 0) {
     pourcentageVictoires = Math.round(

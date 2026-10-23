@@ -611,37 +611,6 @@ button[type="submit"]:hover,
   margin-right: 0.5rem;
 }
 
-/* Écran de sélection du mode de jeu */
-.ecran-selection-mode {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: #0f172a;
-  border: 1px solid var(--bordure-carte);
-  border-radius: 0.75rem;
-  text-align: center;
-}
-
-.ecran-selection-mode p {
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  color: var(--texte-principal);
-}
-
-.ecran-selection-mode button {
-  margin: 0.3rem;
-  padding: 0.8rem 1.5rem;
-  font-size: 0.95rem;
-  background-color: var(--fond-touche);
-  color: var(--texte-touche);
-  border: 1px solid var(--bordure-carte);
-  border-radius: 0.55rem;
-  cursor: pointer;
-}
-
-.ecran-selection-mode button:hover {
-  background-color: var(--fond-touche-hover);
-}
-
 /* Compte à rebours avant le prochain mot du jour */
 .compte-a-rebours {
   margin: 0.5rem 0;

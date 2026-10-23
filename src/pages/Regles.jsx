@@ -3,6 +3,7 @@
 import { Link } from "react-router-dom";
 import CaseLettre from "../components/CaseLettre.jsx";
 
+// Page statique : réutilise CaseLettre pour montrer les couleurs.
 function Regles() {
   return (
     <main className="page page-large">

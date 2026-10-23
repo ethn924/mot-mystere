@@ -4,7 +4,7 @@
 import { Link } from "react-router-dom";
 import { lireScoresDuJour, lireScoresGeneraux } from "../logique/scores.js";
 
-// Affiche un tableau de scores à partir d'une liste de parties
+// Affiche un classement. trierParTemps : true = départage au temps, false = aux essais.
 function TableauScores({ titre, scores, trierParTemps }) {
   if (scores.length === 0) {
     return (
@@ -15,7 +15,6 @@ function TableauScores({ titre, scores, trierParTemps }) {
     );
   }
 
-  // Trie les scores : par points décroissants, puis par temps ou essais
   const scoresTries = [...scores].sort(function (a, b) {
     if (b.points !== a.points) {
       return b.points - a.points;
@@ -44,7 +43,7 @@ function TableauScores({ titre, scores, trierParTemps }) {
         <tbody>
           {scoresTries.slice(0, 10).map(function (score, index) {
             let affichageTemps = "-";
-            if (score.temps && score.temps > 0) {
+            if (score.temps > 0) {
               const minutes = Math.floor(score.temps / 60);
               const secondes = score.temps % 60;
               affichageTemps = minutes + "m " + secondes + "s";

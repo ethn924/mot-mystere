@@ -1,6 +1,6 @@
-# Préparation de l'oral
+# À l'oral — ce qu'il faut savoir sur chaque fichier
 
-> **Pourquoi cette fiche :** la soutenance se termine par des questions sur le code. Cette fiche résume chaque fichier et les réponses aux questions les plus probables.
+Ce fichier est mon aide-mémoire pour la soutenance. Il explique simplement ce que fait chaque partie du projet, pour que je puisse répondre aux questions du prof sans hésiter.
 
 ## Comment est organisé le projet
 
@@ -9,7 +9,7 @@ src/
 ├── logique/     -> tout le JavaScript pur (pas de React, pas d'affichage)
 ├── components/  -> les petits morceaux d'interface (une case, une ligne, la grille, le clavier)
 ├── pages/       -> les 5 écrans du jeu (accueil, partie, scores, stats, règles)
-├── data/        -> la liste des 300 mots mystères (mots-solutions.json)
+├── data/        -> la liste d'environ 300 mots mystères (mots-solutions.json)
 ├── App.jsx      -> configure les 5 adresses (routes) du site
 └── main.jsx     -> point de démarrage de l'application
 ```
@@ -34,9 +34,10 @@ C'est le cerveau du jeu. Rien d'affichage ici, que des fonctions pures.
 C'est le seul fichier qui parle à Internet. Il appelle l'API du Wiktionnaire.
 
 - `verifierMotWiktionnaire(proposition)` : teste si le mot tapé est un vrai mot français.
-  - D'abord, il teste le mot directement (ex: "arbre").
-  - Si ça ne marche pas, il fait une recherche sur le Wiktionnaire pour trouver la version avec accents (ex: joueur tape "ECOLE", trouve "école").
-  - Il vérifie que la page a bien une section "Français" (pour éviter les mots d'autres langues).
+  - Une seule requête au Wiktionnaire : `action=query&list=search&srsearch=<mot>`
+  - Le prof a dit qu'on pouvait simplifier et ne faire qu'un seul appel au lieu de deux.
+  - On regarde dans les résultats si un titre correspond à notre mot sans accents.
+  - Si le Wiktionnaire le trouve, c'est un mot français.
   - `origin=*` est ajouté dans l'URL sinon le navigateur bloque la réponse (CORS).
   - Si l'API ne répond pas, on accepte le mot par défaut pour ne pas bloquer le joueur.
 
@@ -112,7 +113,7 @@ Ma solution : je fais deux boucles séparées.
 Exemple avec ARBRE / ERRER :
 
 - Boucle 1 (verts) : seule la lettre R à l'index 1 est bien placée. Je marque vert et je biffe le R de l'index 1 dans ma liste.
-- Boucle 2 (jaunes) : je cherche les lettres restantes (E, R, E, R) dans ma liste qui contient encore [A, null, B, R, E]. 
+- Boucle 2 (jaunes) : je cherche les lettres restantes (E, R, E, R) dans ma liste qui contient encore [A, null, B, R, E].
   - Le premier E trouve le E à l'index 4 → jaune, je biffe.
   - Le R à l'index 2 trouve le R à l'index 3 → jaune, je biffe.
   - Le deuxième E ne trouve plus de E disponible (le seul était déjà biffé) → gris.
@@ -121,7 +122,6 @@ Exemple avec ARBRE / ERRER :
 Résultat final : gris, vert, jaune, gris, gris. C'est correct.
 
 Dans le code, `null` signifie simplement : "cette lettre du mot mystère est déjà utilisée, elle ne compte plus".
-
 
 **Q : Comment choisit-on le mot du jour ?**
 R : On compte le nombre de jours écoulés depuis une date de référence (1er janvier 2024), on prend le reste de la division par le nombre de mots dans la liste. Comme c'est basé sur la date, tout le monde a le même mot, et il change à minuit. Pas besoin de Math.random().
@@ -134,6 +134,9 @@ R : Dans le localStorage, sous la clé "partieDuJour", avec la date du jour. Si 
 
 **Q : Pourquoi `origin=*` dans les requêtes Wiktionnaire ?**
 R : Sans ce paramètre, le navigateur bloque la réponse à cause du CORS (Cross-Origin Resource Sharing). Le sujet le précise explicitement.
+
+**Q : Pourquoi seulement un seul appel au Wiktionnaire ?**
+R : Le prof a dit qu'on pouvait simplifier. Au lieu de tester d'abord le mot directement puis de faire une recherche, je fais directement une recherche (`list=search`). Si le Wiktionnaire trouve le mot dans ses résultats, c'est un mot français. Ça fait une requête au lieu de deux.
 
 ## Pour le partage (presse-papiers)
 

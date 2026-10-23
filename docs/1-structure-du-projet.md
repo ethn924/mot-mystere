@@ -9,7 +9,7 @@ src/
 ├── logique/      JavaScript pur : règles, API, stockage (aucun React)
 ├── components/   petits morceaux d'affichage réutilisables
 ├── pages/        un écran par adresse (React Router)
-├── data/         mots-solutions.json (les ~300 mots mystères)
+├── data/         mots-solutions.json (environ 300 mots mystères)
 ├── App.jsx       les routes
 └── main.jsx      démarrage de l'application
 ```
@@ -36,7 +36,6 @@ src/
 
 | Fonction | Rôle |
 | --- | --- |
-| `verifierSectionFrancaise()` | Vérifie qu'une page a une section « Français » |
 | `verifierMotWiktionnaire()` | Dit si le mot tapé existe en français (retrouve aussi la version avec accents) |
 
 ## src/logique/scores.js : ce qui est enregistré dans le navigateur

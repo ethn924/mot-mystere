@@ -29,26 +29,9 @@ export function tirerMotAleatoire(listeMots) {
   return listeMots[random];
 }
 
-// Compare le mot mystère et la proposition du joueur.
-// Retourne une liste de couleurs : "vert", "jaune" ou "gris" pour chaque lettre.
-//
-// Ce qui m'a fait galérer : les lettres en double.
-// Exemple concret : mot mystère = ARBRE, proposition = ERRER.
-// Il n'y a que deux R et un E dans ARBRE. Je ne peux pas mettre trois R en jaune.
-//
-// Ma première idée : une seule boucle qui regarde lettre par lettre.
-// Résultat : je donnais trop de lettres jaunes. Ça ne marche pas.
-//
-// Ma solution : deux boucles séparées.
-// 1) D'abord, je marque en vert les lettres bien placées (même lettre, même place).
-//    Quand une lettre devient verte, je la "biffe" dans une liste séparée pour
-//    qu'elle ne puisse plus servir de jaune après.
-// 2) Ensuite, je cherche les lettres jaunes seulement parmi celles qui n'ont pas
-//    été biffées. Dès qu'une lettre sert de jaune, je la biffe aussi.
-//
-// Pour "biffer" une lettre, je remplace sa valeur par null dans le tableau des
-// lettres disponibles. Quand je vois null, je sais que cette lettre est déjà utilisée
-// et je ne la compte plus.
+// Compare la proposition au mot mystère : "vert", "jaune" ou "gris" pour chaque lettre.
+// Deux passages pour gérer les lettres en double (ex : ARBRE / ERRER) :
+// d'abord les verts, puis les jaunes avec les lettres pas encore utilisées.
 export function comparer(motMystere, proposition) {
   const mystere = normaliserMot(motMystere);
   const essai = normaliserMot(proposition);
@@ -58,15 +41,13 @@ export function comparer(motMystere, proposition) {
     couleurs[i] = "gris";
   }
 
-  // Tableau des lettres du mot mystère encore disponibles.
-  // Quand je mets null à une position, ça signifie : cette lettre est déjà utilisée.
+  // Lettres du mot encore utilisables (null = déjà utilisée)
   const disponibles = [];
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     disponibles[i] = mystere[i];
   }
 
-  // Première boucle : les lettres bien placées deviennent vertes.
-  // Je biffe la lettre utilisée en mettant null.
+  // 1er passage : les verts
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     if (essai[i] === mystere[i]) {
       couleurs[i] = "vert";
@@ -74,10 +55,7 @@ export function comparer(motMystere, proposition) {
     }
   }
 
-  // Deuxième boucle : les lettres mal placées mais présentes deviennent jaunes.
-  // Je saute les lettres déjà vertes.
-  // Je cherche seulement parmi les lettres encore disponibles (celles qui ne sont pas null).
-  // Dès que je trouve une correspondance, je biffe cette lettre en mettant null.
+  // 2e passage : les jaunes, seulement avec les lettres restantes
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     if (couleurs[i] === "vert") {
       continue;
@@ -184,17 +162,30 @@ export function calculerStatutsLettres(lignes) {
   return statuts;
 }
 
-// Date de référence pour le mot du jour (1er janvier 2024).
-const DATE_REFERENCE = new Date("2024-01-01T00:00:00Z");
+// Le mot du jour change à minuit heure française, pour tout le monde.
+// On lit donc toujours la date et l'heure de Paris, quel que soit le fuseau de l'ordinateur.
+const FUSEAU = "Europe/Paris";
 
-// Calcule le nombre de jours écoulés depuis la date de référence.
-function nombreDeJoursDepuisReference() {
-  const maintenant = new Date();
-  const difference = maintenant - DATE_REFERENCE;
-  return Math.floor(difference / (1000 * 60 * 60 * 24));
+// Renvoie la date de Paris sous forme "AAAA-MM-JJ" (ex : "2026-10-23").
+export function dateDeParis() {
+  // Le format "en-CA" donne directement AAAA-MM-JJ.
+  return new Date().toLocaleDateString("en-CA", { timeZone: FUSEAU });
 }
 
-// Choisit le mot du jour : le même pour tous, change à minuit.
+// Calcule le nombre de jours écoulés depuis le 1er janvier 2024, en date de Paris.
+function nombreDeJoursDepuisReference() {
+  const morceaux = dateDeParis().split("-");
+  const annee = Number(morceaux[0]);
+  const mois = Number(morceaux[1]);
+  const jour = Number(morceaux[2]);
+
+  // On compare deux dates "pures" (sans heure) pour éviter les décalages.
+  const aujourdhui = Date.UTC(annee, mois - 1, jour);
+  const reference = Date.UTC(2024, 0, 1);
+  return Math.floor((aujourdhui - reference) / (1000 * 60 * 60 * 24));
+}
+
+// Choisit le mot du jour : le même pour tous, change à minuit (heure de Paris).
 // On n'utilise pas Math.random() car deux ordinateurs auraient des mots différents.
 export function choisirMotDuJour(listeMots) {
   const nombreDeJours = nombreDeJoursDepuisReference();
@@ -202,16 +193,16 @@ export function choisirMotDuJour(listeMots) {
   return listeMots[indice];
 }
 
-// Calcule le temps restant avant minuit (prochain changement de mot du jour).
+// Calcule le temps restant avant minuit à Paris (prochain mot du jour).
 // Retourne un objet avec heures, minutes et secondes.
 export function tempsRestantAvantMinuit() {
-  const maintenant = new Date();
-  const demain = new Date(maintenant);
-  demain.setDate(demain.getDate() + 1);
-  demain.setHours(0, 0, 0, 0);
+  // Heure actuelle à Paris, ex : "14:05:32".
+  const heureParis = new Date().toLocaleTimeString("fr-FR", { timeZone: FUSEAU });
+  const morceaux = heureParis.split(":");
+  const secondesEcoulees =
+    Number(morceaux[0]) * 3600 + Number(morceaux[1]) * 60 + Number(morceaux[2]);
 
-  const difference = demain - maintenant;
-  const secondesTotales = Math.floor(difference / 1000);
+  const secondesTotales = 24 * 3600 - secondesEcoulees;
 
   const heures = Math.floor(secondesTotales / 3600);
   const minutes = Math.floor((secondesTotales % 3600) / 60);

@@ -15,6 +15,7 @@ import {
   normaliserMot,
   calculerStatutsLettres,
   tempsRestantAvantMinuit,
+  dateDeParis,
 } from "../logique/jeu.js";
 import { verifierMotWiktionnaire } from "../logique/wiktionnaire.js";
 import { enregistrerPartie } from "../logique/scores.js";
@@ -43,7 +44,7 @@ function chargerPartieDuJour(dateDuJour) {
 
 function Partie() {
   // Date du jour pour savoir si une sauvegarde du mot du jour est encore valable.
-  const dateDuJour = new Date().toLocaleDateString("fr-FR");
+  const dateDuJour = dateDeParis();
 
   // Mode de jeu : true = mot du jour, false = partie libre.
   // Choisi sur l'accueil, on ne le modifie pas ici.

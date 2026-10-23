@@ -4,7 +4,7 @@
 
 Jeu de lettres en React, projet de cours.
 
-Palier visé : **palier 4 (le mot du jour)**.
+Palier visé : **palier 4 (le mot du jour)**, atteint
 
 ## Auteur
 
@@ -17,7 +17,7 @@ Ethan ([@ethn924](https://github.com/ethn924)). Projet réalisé seul, sans bin�
 | Palier 1 : le jeu | Fait |
 | Palier 2 : le dictionnaire | Fait |
 | Palier 3 : le confort de jeu | Fait |
-| Palier 4 : le mot du jour | Présenté en cours à l'oral, terminé après l'oral (voir « Fait après l'oral ») |
+| Palier 4 : le mot du jour | Fait (fini après l'oral avec les tests et Vercel, voir « Fait après l'oral ») |
 | Palier 5 : les variantes | Pas commencé |
 | Palier 6 : les quatre grilles | Pas commencé |
 

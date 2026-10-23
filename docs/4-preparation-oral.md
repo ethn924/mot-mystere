@@ -1,6 +1,6 @@
-# À l'oral — ce qu'il faut savoir sur chaque fichier
+# Préparation de l'oral
 
-Ce fichier est mon aide-mémoire pour la soutenance. Il explique simplement ce que fait chaque partie du projet, pour que je puisse répondre aux questions du prof sans hésiter.
+> **Pourquoi cette fiche :** la soutenance se termine par des questions sur le code. Cette fiche résume chaque fichier et les réponses aux questions les plus probables.
 
 ## Comment est organisé le projet
 

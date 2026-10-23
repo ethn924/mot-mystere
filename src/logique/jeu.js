@@ -1,3 +1,4 @@
+// Auteur : Ethan (ethn924) - Le Mot Mystère
 // Logique du jeu : règles, comparaison des lettres, calcul des points et mot du jour.
 // Rien d'affichage ici, tout est séparé de React pour rester facile à comprendre.
 
@@ -47,7 +48,9 @@ export function comparer(motMystere, proposition) {
     disponibles[i] = mystere[i];
   }
 
-  // 1er passage : les verts
+  // 1er passage : les verts. On les fait en premier pour qu'une lettre bien placée
+  // garde sa lettre. Ex : ROUGE / OOXXX, le 2e O doit être vert et le 1er gris,
+  // sinon le 1er O prendrait le seul O en jaune et le 2e n'aurait plus rien.
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     if (essai[i] === mystere[i]) {
       couleurs[i] = "vert";

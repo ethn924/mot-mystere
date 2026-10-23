@@ -1,6 +1,6 @@
-# À lire avant de toucher à la logique du jeu
+# Difficultés techniques et solutions
 
-Ce fichier regroupe les points qui m'ont posé problème dans `src/logique/`, surtout dans `jeu.js`. C'est mon aide-mémoire personnel pour la soutenance, au cas où on me demande d'expliquer un choix technique.
+> **Pourquoi cette fiche :** le sujet demande de présenter une difficulté rencontrée. Je regroupe ici les points qui m'ont posé problème et comment je les ai résolus, pour ne pas refaire les mêmes erreurs en modifiant la logique.
 
 ## 1. Les lettres en double dans comparer() — le gros piège
 
@@ -47,4 +47,4 @@ Je transforme tout en majuscule, je remplace `Œ` par `OE` et `Æ` par `AE` à l
 
 ---
 
-Si tu modifies quelque chose dans `jeu.js` ou `wiktionnaire.js`, commence par lire ce fichier pour éviter de refaire les mêmes erreurs. Le README renvoie ici pour les détails sur les parties les plus complexes.
+Si tu modifies quelque chose dans `jeu.js` ou `wiktionnaire.js`, commence par lire ce fichier pour éviter de refaire les mêmes erreurs. Le README renvoie ici pour les détails.

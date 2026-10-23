@@ -2,6 +2,8 @@
   "name": "mot-mystere-app",
   "private": true,
   "version": "0.0.0",
+  "author": "Ethan (ethn924) <ethanlalienne92@gmail.com>",
+  "description": "Le Mot Mystère, jeu de lettres en React (projet de cours)",
   "type": "module",
   "scripts": {
     "dev": "vite",

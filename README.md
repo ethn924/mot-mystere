@@ -1,4 +1,4 @@
-﻿# Le Mot Mystère
+# Le Mot Mystère
 
 Jeu de lettres en React, projet de cours.
 
@@ -6,7 +6,7 @@ Palier visé : **palier 4 (le mot du jour)**.
 
 ## Auteur
 
-Ethan (ethn924) — projet réalisé individuellement avec l'accord du professeur.
+Ethan ([@ethn924](https://github.com/ethn924)). Projet réalisé seul, sans binôme, avec l'accord du professeur : tous les commits sont donc les miens.
 
 ## État des paliers
 
@@ -90,9 +90,20 @@ Pour le style visuel, j'ai conçu un thème sombre moderne et épuré (ardoise /
 - Cases de jeu avec micro-animation d'apparition « pop » à la frappe et retournement 3D à la validation.
 - Palette de couleurs soignée (vert émeraude, jaune ambré, gris ardoise) garantissant un confort visuel optimal sans éblouir.
 
+## Documentation
+
+Le dossier `docs/` contient mes fiches, chacune commence par la raison de son existence :
+
+| Fiche | Contenu |
+| --- | --- |
+| [1-structure-du-projet.md](docs/1-structure-du-projet.md) | Organisation des dossiers et rôle de chaque fonction |
+| [2-deroulement-d-une-partie.md](docs/2-deroulement-d-une-partie.md) | Ce qui se passe dans le code, de l'accueil à la fin de partie |
+| [3-difficultes-techniques.md](docs/3-difficultes-techniques.md) | Les problèmes rencontrés et leurs solutions |
+| [4-preparation-oral.md](docs/4-preparation-oral.md) | Résumé par fichier et réponses aux questions probables |
 ## Organisation
 
 ```text
+docs/            fiches de documentation (voir ci-dessus)
 src/
 ├── components/   Grille, Ligne, CaseLettre, Clavier
 ├── data/         mots-solutions.json
@@ -104,7 +115,7 @@ src/
 
 ## Difficultés rencontrées et solutions
 
-Franchement, j'ai passé pas mal de temps sur plusieurs points du sujet où je me suis pris la tête avant de trouver la bonne approche. J'ai consigné les galères les plus techniques dans le fichier `LIRE_AVANT_MODIF_LOGIQUE.md` à la racine, avec ce qui m'a vraiment semblé complexe et comment je m'en suis sorti.
+Franchement, j'ai passé pas mal de temps sur plusieurs points du sujet où je me suis pris la tête avant de trouver la bonne approche. J'ai consigné les galères les plus techniques dans [docs/3-difficultes-techniques.md](docs/3-difficultes-techniques.md), avec ce qui m'a vraiment semblé complexe et comment je m'en suis sorti.
 
 1. **Le piège des lettres en double dans `comparer()`** :  
    Au début, je voulais faire une seule boucle simple pour colorer les lettres au fur et à mesure. Grosse erreur : sur un mot comme ARBRE avec une proposition ERRER, ça me mettait trois R jaunes alors qu'il n'y en a que deux dans le mot. J'ai dû tout poser sur papier et séparer en 2 boucles : d'abord tous les verts (et je marque les lettres consommées à `null`), et ensuite seulement les jaunes avec ce qui reste de disponible.

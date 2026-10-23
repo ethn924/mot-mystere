@@ -1,3 +1,4 @@
+// Auteur : Ethan (ethn924) - Le Mot Mystère
 // wiktionnaire.js : contacte l'API du Wiktionnaire pour vérifier si un mot existe en français.
 // Toutes les requêtes réseau sont dans ce fichier.
 

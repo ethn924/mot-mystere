@@ -1,7 +1,6 @@
-# Mémo oral de soutien - Ethan (Le Mot Mystère)
+# Déroulement d'une partie
 
-Ce fichier me sert d'aide-mémoire pour ma soutenance de 10 minutes avec le prof.
-Le but est de pouvoir expliquer l'architecture, chaque fichier et chaque choix technique avec mes propres mots, sans hésiter.
+> **Pourquoi cette fiche :** suivre étape par étape ce qui se passe dans le code, de l'accueil à l'écran de fin, pour savoir quel fichier intervient à quel moment.
 
 ---
 

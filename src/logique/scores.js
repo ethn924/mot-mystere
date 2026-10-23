@@ -1,3 +1,4 @@
+// Auteur : Ethan (ethn924) - Le Mot Mystère
 // scores.js : gère l'enregistrement des parties et des statistiques dans le localStorage.
 
 const CLE_SCORES = "scores_mot_mystere";

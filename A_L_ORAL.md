@@ -100,7 +100,28 @@ Explique les trois couleurs (vert/jaune/gris) avec des exemples visuels, et affi
 R : Pour que le code soit facile à tester et à comprendre. `jeu.js` ne contient que du JavaScript pur, sans React. On peut donc vérifier que `comparer()` marche bien sans lancer l'interface.
 
 **Q : Comment gère-t-on les lettres en double (ex: ARBRE / ERRER) ?**
-R : En 2 boucles. D'abord on marque toutes les lettres bien placées (vert) et on les "consomme" (on les met à null dans une liste de lettres disponibles). Ensuite, on marque les lettres jaunes seulement avec ce qui reste disponible. Comme ça, on ne donne pas 3 fois une lettre qui n'existe qu'une fois dans le mot.
+
+R : C'est le point le plus délicat du jeu. Le mot ARBRE contient deux R et un seul E. La proposition ERRER contient trois R et deux E. Je ne peux pas mettre trois R en jaune parce qu'il n'y en a que deux dans le mot mystère.
+
+Ma solution : je fais deux boucles séparées.
+
+**Première boucle** : je regarde lettre par lettre si elle est bien placée (même lettre, même indice). Si oui, je marque vert et je "biffe" cette lettre dans une liste de lettres disponibles (je remplace par `null`). Une lettre biffée ne peut plus servir de jaune après.
+
+**Deuxième boucle** : je cherche les lettres jaunes seulement parmi les lettres qui n'ont pas été biffées (celles qui ne sont pas `null`). Dès qu'une lettre sert de jaune, je la biffe aussi.
+
+Exemple avec ARBRE / ERRER :
+
+- Boucle 1 (verts) : seule la lettre R à l'index 1 est bien placée. Je marque vert et je biffe le R de l'index 1 dans ma liste.
+- Boucle 2 (jaunes) : je cherche les lettres restantes (E, R, E, R) dans ma liste qui contient encore [A, null, B, R, E]. 
+  - Le premier E trouve le E à l'index 4 → jaune, je biffe.
+  - Le R à l'index 2 trouve le R à l'index 3 → jaune, je biffe.
+  - Le deuxième E ne trouve plus de E disponible (le seul était déjà biffé) → gris.
+  - Le dernier R ne trouve plus de R disponible (les deux R étaient déjà biffés) → gris.
+
+Résultat final : gris, vert, jaune, gris, gris. C'est correct.
+
+Dans le code, `null` signifie simplement : "cette lettre du mot mystère est déjà utilisée, elle ne compte plus".
+
 
 **Q : Comment choisit-on le mot du jour ?**
 R : On compte le nombre de jours écoulés depuis une date de référence (1er janvier 2024), on prend le reste de la division par le nombre de mots dans la liste. Comme c'est basé sur la date, tout le monde a le même mot, et il change à minuit. Pas besoin de Math.random().

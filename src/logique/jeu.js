@@ -9,7 +9,7 @@ export function normaliserMot(mot) {
   let texte = mot.toUpperCase();
   texte = texte.replaceAll("Œ", "OE");
   texte = texte.replaceAll("Æ", "AE");
-  texte = texte.normalize("NFD");
+  texte = texte.normalize("NFD"); // Décompose les lettres avec accent pour les comparaisons
 
   let resultat = "";
   for (let i = 0; i < texte.length; i++) {
@@ -31,9 +31,24 @@ export function tirerMotAleatoire(listeMots) {
 
 // Compare le mot mystère et la proposition du joueur.
 // Retourne une liste de couleurs : "vert", "jaune" ou "gris" pour chaque lettre.
-// Piège des lettres en double : 2 boucles.
-// 1) D'abord les lettres bien placées (vert).
-// 2) Ensuite les lettres mal placées mais présentes (jaune), en ne comptant pas deux fois une lettre.
+//
+// Ce qui m'a fait galérer : les lettres en double.
+// Exemple concret : mot mystère = ARBRE, proposition = ERRER.
+// Il n'y a que deux R et un E dans ARBRE. Je ne peux pas mettre trois R en jaune.
+//
+// Ma première idée : une seule boucle qui regarde lettre par lettre.
+// Résultat : je donnais trop de lettres jaunes. Ça ne marche pas.
+//
+// Ma solution : deux boucles séparées.
+// 1) D'abord, je marque en vert les lettres bien placées (même lettre, même place).
+//    Quand une lettre devient verte, je la "biffe" dans une liste séparée pour
+//    qu'elle ne puisse plus servir de jaune après.
+// 2) Ensuite, je cherche les lettres jaunes seulement parmi celles qui n'ont pas
+//    été biffées. Dès qu'une lettre sert de jaune, je la biffe aussi.
+//
+// Pour "biffer" une lettre, je remplace sa valeur par null dans le tableau des
+// lettres disponibles. Quand je vois null, je sais que cette lettre est déjà utilisée
+// et je ne la compte plus.
 export function comparer(motMystere, proposition) {
   const mystere = normaliserMot(motMystere);
   const essai = normaliserMot(proposition);
@@ -43,13 +58,15 @@ export function comparer(motMystere, proposition) {
     couleurs[i] = "gris";
   }
 
-  // On copie le mot mystère pour pouvoir "consommer" les lettres déjà utilisées.
+  // Tableau des lettres du mot mystère encore disponibles.
+  // Quand je mets null à une position, ça signifie : cette lettre est déjà utilisée.
   const disponibles = [];
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     disponibles[i] = mystere[i];
   }
 
   // Première boucle : les lettres bien placées deviennent vertes.
+  // Je biffe la lettre utilisée en mettant null.
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     if (essai[i] === mystere[i]) {
       couleurs[i] = "vert";
@@ -58,7 +75,9 @@ export function comparer(motMystere, proposition) {
   }
 
   // Deuxième boucle : les lettres mal placées mais présentes deviennent jaunes.
-  // On ne touche pas aux lettres déjà vertes.
+  // Je saute les lettres déjà vertes.
+  // Je cherche seulement parmi les lettres encore disponibles (celles qui ne sont pas null).
+  // Dès que je trouve une correspondance, je biffe cette lettre en mettant null.
   for (let i = 0; i < LONGUEUR_MOT; i++) {
     if (couleurs[i] === "vert") {
       continue;

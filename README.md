@@ -130,7 +130,7 @@ Tout ce qui est au-dessus a été présenté à l'oral. Ce qui suit a été fait
 - Fin du palier 4 :
   - 8 tests automatiques avec Vitest (dont 2 sur les lettres en double), à lancer avec `npm test`.
   - Fichier `vercel.json` pour le déploiement.
-  - Déploiement sur Vercel : à faire. Lien : (bientôt)
+  - Site en ligne sur Vercel : [mot-mystere-theta.vercel.app](https://mot-mystere-theta.vercel.app) (toutes les pages marchent, même en rafraîchissant).
 - Vérification Wiktionnaire simplifiée : 1 seul appel, qui vérifie que le mot est français.
 - Code simplifié et commentaires plus clairs.
 - Doc mise à jour.

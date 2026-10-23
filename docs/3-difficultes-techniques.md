@@ -31,7 +31,7 @@ J'ai résolu ça en deux étapes :
 
 Il faut aussi ajouter `origin=*` dans l'URL sinon le navigateur bloque la réponse (CORS), et envoyer l'en-tête `Api-User-Agent` comme demandé par Wikimedia.
 
-Par la suite, j'ai simplifié cette vérification en un seul appel (`list=search` avec `intitle:` et `incategory:français`), voir `PLAN_IMPL.md`.
+Par la suite, j'ai simplifié cette vérification en un seul appel (`list=search` avec `intitle:` et `incategory:français`), voir la partie « Fait après l'oral » du [README](../README.md#fait-après-loral-23102026-14h30).
 
 ## 4. L'animation de tremblement qui ne se relance pas
 

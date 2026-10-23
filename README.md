@@ -77,6 +77,7 @@ Vite affiche une adresse locale (souvent `http://localhost:5173`).
 
 ```sh
 npm run lint
+npm test
 npm run build
 ```
 
@@ -121,3 +122,15 @@ Le détail est dans [docs/3-difficultes-techniques.md](docs/3-difficultes-techni
 3. **Wiktionnaire et accents** : `origin=*` pour le CORS et une recherche `list=search` pour retrouver les mots accentués.
 4. **Animation de tremblement** : un compteur de refus dans la `key` de la ligne pour la relancer.
 5. **Couleurs du clavier** : priorité vert > jaune > gris dans `calculerStatutsLettres()`.
+
+## Fait après l'oral (23/10/2026, 14h30)
+
+Tout ce qui est au-dessus a été présenté à l'oral. Ce qui suit a été fait après.
+
+- Fin du palier 4 :
+  - 8 tests automatiques avec Vitest (dont 2 sur les lettres en double), à lancer avec `npm test`.
+  - Fichier `vercel.json` pour le déploiement.
+  - Déploiement sur Vercel : à faire. Lien : (bientôt)
+- Vérification Wiktionnaire simplifiée : 1 seul appel, qui vérifie que le mot est français.
+- Code simplifié et commentaires plus clairs.
+- Doc mise à jour.

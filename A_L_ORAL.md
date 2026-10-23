@@ -119,7 +119,7 @@ Exemple avec ARBRE / ERRER :
   - Le deuxième E ne trouve plus de E disponible (le seul était déjà biffé) → gris.
   - Le dernier R ne trouve plus de R disponible (les deux R étaient déjà biffés) → gris.
 
-Résultat final : gris, vert, jaune, gris, gris. C'est correct.
+Résultat final : jaune, vert, jaune, gris, gris. C'est correct.
 
 Dans le code, `null` signifie simplement : "cette lettre du mot mystère est déjà utilisée, elle ne compte plus".
 
@@ -137,6 +137,16 @@ R : Sans ce paramètre, le navigateur bloque la réponse à cause du CORS (Cross
 
 **Q : Pourquoi seulement un seul appel au Wiktionnaire ?**
 R : Le prof a dit qu'on pouvait simplifier. Au lieu de tester d'abord le mot directement puis de faire une recherche, je fais directement une recherche (`list=search`). Si le Wiktionnaire trouve le mot dans ses résultats, c'est un mot français. Ça fait une requête au lieu de deux.
+
+## Les tests
+
+Les tests sont dans `src/logique/jeu.test.js` (avec Vitest). Pour les lancer : `npm test`.
+
+Ils vérifient les fonctions pures de `jeu.js`, sans ouvrir le jeu :
+- `comparer()` : bon mot (5 verts), aucune lettre commune (5 gris), accents ignorés, et deux cas de lettres en double (ARBRE / ERRER et ROUGE / OOXXX).
+- `normaliserMot()` : "école" devient "ECOLE".
+- `estGagne()` : vrai seulement si tout est vert.
+- `calculerPoints()` : 1 essai = 600, 6 essais = 100, perdu = 0.
 
 ## Pour le partage (presse-papiers)
 

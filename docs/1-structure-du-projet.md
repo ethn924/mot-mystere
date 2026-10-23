@@ -5,8 +5,10 @@
 ## Organisation des dossiers
 
 ```text
+vercel.json      adresses React Router sur Vercel
 src/
 ├── logique/      JavaScript pur : règles, API, stockage (aucun React)
+│   └── jeu.test.js  tests Vitest des fonctions de jeu.js
 ├── components/   petits morceaux d'affichage réutilisables
 ├── pages/        un écran par adresse (React Router)
 ├── data/         mots-solutions.json (environ 300 mots mystères)

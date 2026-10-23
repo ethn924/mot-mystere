@@ -15,7 +15,7 @@ Ethan (ethn924) — projet réalisé individuellement avec l'accord du professeu
 | Palier 1 : le jeu | Fait |
 | Palier 2 : le dictionnaire | Fait |
 | Palier 3 : le confort de jeu | Fait |
-| Palier 4 : le mot du jour | Pas commencé (setup prêt : outils de test ajoutés) |
+| Palier 4 : le mot du jour | En cours (sans tests ni mise en ligne encore) |
 | Palier 5 : les variantes | Pas commencé |
 | Palier 6 : les quatre grilles | Pas commencé |
 
@@ -51,6 +51,20 @@ Ethan (ethn924) — projet réalisé individuellement avec l'accord du professeu
 - Écran des règles : explications détaillées et exemple illustré des trois couleurs.
 - Navigation React Router dédiée : chaque écran a sa propre adresse distincte (`/`, `/partie`, `/scores`, `/stats`, `/regles`).
 - Bouton Retour à l'accueil disponible depuis la page de partie pour quitter une partie en cours.
+
+## Palier 4, ce qui marche
+
+- Mot du jour : le même mot pour tous les joueurs, choisi selon la date (change à minuit)
+- Choix entre "Partie libre" (mot aléatoire) et "Mot du jour" au lancement de la partie
+- Compte à rebours indiquant le temps restant avant le prochain mot
+- Une partie du jour commencée reprend où elle en était si la page est rechargée
+- Une fois la partie du jour terminée, elle ne peut pas être rejouée le même jour
+- Partage du résultat dans le presse-papiers (texte avec couleurs emoji, sans révéler les lettres)
+- Tableau des scores en deux classements : Mot du Jour (tri par points puis temps) et Général (tri par points puis essais)
+
+Ce qui est prévu pour plus tard (non encore fait) :
+- Les tests automatisés (Vitest, Testing Library)
+- Le déploiement sur Vercel
 
 ## Lancer le projet
 

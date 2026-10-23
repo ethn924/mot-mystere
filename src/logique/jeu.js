@@ -167,3 +167,40 @@ export function calculerStatutsLettres(lignes) {
 
   return statuts;
 }
+
+// Date de référence : le 1er janvier 2024 à minuit
+const DATE_REFERENCE = new Date("2024-01-01T00:00:00Z");
+
+// Calcule le nombre de jours écoulés depuis la date de référence
+// Le changement de mot se fait à minuit (heure locale)
+function nombreDepuisReference() {
+  const maintenant = new Date();
+  const difference = maintenant - DATE_REFERENCE;
+  return Math.floor(difference / (1000 * 60 * 60 * 24));
+}
+
+// Choisit le mot du jour : le même pour tous les joueurs qui jouent le même jour
+// Change à minuit, sans utiliser Math.random() pour que tout le monde ait le même mot
+export function choisirMotDuJour(listeMots) {
+  const nombreDeJours = nombreDepuisReference();
+  const indice = nombreDeJours % listeMots.length;
+  return listeMots[indice];
+}
+
+// Calcule le temps restant avant minuit (prochain changement de mot du jour)
+// Retourne un objet avec heures, minutes et secondes
+export function tempsRestantAvantMinuit() {
+  const maintenant = new Date();
+  const demain = new Date(maintenant);
+  demain.setDate(demain.getDate() + 1);
+  demain.setHours(0, 0, 0, 0);
+
+  const difference = demain - maintenant;
+  const secondesTotales = Math.floor(difference / 1000);
+
+  const heures = Math.floor(secondesTotales / 3600);
+  const minutes = Math.floor((secondesTotales % 3600) / 60);
+  const secondes = secondesTotales % 60;
+
+  return { heures, minutes, secondes };
+}

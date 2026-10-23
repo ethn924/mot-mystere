@@ -15,31 +15,37 @@ function lirePseudoSauve() {
 
 function Accueil() {
   const [pseudo, setPseudo] = useState(lirePseudoSauve);
+  // modeDuJour : true pour le mot du jour, false pour une partie libre
+  const [modeDuJour, setModeDuJour] = useState(false);
   const navigate = useNavigate();
 
   function changerPseudo(event) {
     setPseudo(event.target.value);
   }
 
+  function changerMode(event) {
+    setModeDuJour(event.target.value === "dujour");
+  }
+
   function lancerPartie(event) {
     event.preventDefault();
-    // on mémorise le pseudo pour la prochaine visite
+    // on mémorise le pseudo et le mode pour la prochaine visite
     localStorage.setItem("pseudo", pseudo);
+    localStorage.setItem("modeDuJour", String(modeDuJour));
     navigate("/partie");
   }
 
   return (
     <main className="page page-accueil">
       <header className="accueil-entete">
-        <h1>Le Mot Mystere</h1>
+        <h1>Le Mot Mystère</h1>
         <p className="sous-titre">
-          Bienvenue sur mon jeu de lettres en React ! Mets ton vocabulaire a
-          l'epreuve et trouve le mot secret en 6 essais maximum.
+          Bienvenue sur mon jeu de lettres en React ! Mets ton vocabulaire à l'épreuve et trouve le mot secret en 6 essais maximum.
         </p>
       </header>
 
       {/* petits rappels visuels des trois couleurs pour le joueur */}
-      <section className="cartes-apercu" aria-label="Apercu des regles">
+      <section className="cartes-apercu" aria-label="Aperçu des règles">
         <div className="carte-mini">
           <span className="pastille pastille-verte"></span>
           <div>
@@ -63,7 +69,7 @@ function Accueil() {
         </div>
       </section>
 
-      {/* formulaire pour entrer son pseudo et demarrer */}
+      {/* formulaire pour entrer son pseudo et démarrer */}
       <section className="zone-lancement">
         <form onSubmit={lancerPartie}>
           <label htmlFor="pseudo">Choisis ton pseudo pour le classement</label>
@@ -78,6 +84,28 @@ function Accueil() {
               required
             />
             <button type="submit">Lancer une partie</button>
+          </div>
+          <div className="choix-mode">
+            <label>
+              <input
+                type="radio"
+                name="mode"
+                value="libre"
+                checked={!modeDuJour}
+                onChange={changerMode}
+              />
+              Partie libre (mot aléatoire)
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="mode"
+                value="dujour"
+                checked={modeDuJour}
+                onChange={changerMode}
+              />
+              Mot du jour (même mot pour tous)
+            </label>
           </div>
         </form>
       </section>

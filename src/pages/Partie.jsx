@@ -3,18 +3,20 @@
 // l'appel au Wiktionnaire, les points et l'enregistrement de la partie finie.
 
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Grille from "../components/Grille.jsx";
 import Clavier from "../components/Clavier.jsx";
 import {
   LONGUEUR_MOT,
   tirerMotAleatoire,
+  choisirMotDuJour,
   comparer,
   estGagne,
   calculerPoints,
   partieEstFinie,
   normaliserMot,
   calculerStatutsLettres,
+  tempsRestantAvantMinuit,
 } from "../logique/jeu.js";
 import { verifierMotWiktionnaire } from "../logique/wiktionnaire.js";
 import { enregistrerPartie } from "../logique/scores.js";
@@ -22,21 +24,111 @@ import motsSolutions from "../data/mots-solutions.json";
 
 function Partie() {
   // proposition : ce que le joueur tape lettre par lettre
-  const [proposition, setProposition] = useState("");
-  // motMystere : le mot à trouver, tiré au hasard au démarrage
-  const [motMystere, setMotMystere] = useState(tirerPremierMot);
+  // motMystere : le mot à trouver (aléatoire ou du jour selon le mode)
   // lignes : historique des propositions validées avec leurs couleurs
-  const [lignes, setLignes] = useState([]);
+  // Tous ces états sont initialisés depuis le localStorage si c'est une reprise de partie du jour
+  const dateDuJour = new Date().toLocaleDateString("fr-FR");
+
+  const [modeDuJour] = useState(() => {
+    const sauvegarde = localStorage.getItem("modeDuJour");
+    return sauvegarde === "true";
+  });
+
+  const [motMystere, setMotMystere] = useState(() => {
+    const sauvegardeMode = localStorage.getItem("modeDuJour");
+    if (sauvegardeMode === "true") {
+      return choisirMotDuJour(motsSolutions);
+    }
+    return tirerPremierMot();
+  });
+
+  const [lignes, setLignes] = useState(() => {
+    const sauvegardeMode = localStorage.getItem("modeDuJour");
+    if (sauvegardeMode !== "true") {
+      return [];
+    }
+    const sauvegarde = localStorage.getItem("partieDuJour");
+    if (!sauvegarde) {
+      return [];
+    }
+    try {
+      const donnees = JSON.parse(sauvegarde);
+      if (donnees && donnees.date === dateDuJour && donnees.lignes) {
+        return donnees.lignes;
+      }
+    } catch {
+      // Si la sauvegarde est illisible, on commence une nouvelle partie
+    }
+    return [];
+  });
+
+  const [proposition, setProposition] = useState(() => {
+    const sauvegardeMode = localStorage.getItem("modeDuJour");
+    if (sauvegardeMode !== "true") {
+      return "";
+    }
+    const sauvegarde = localStorage.getItem("partieDuJour");
+    if (!sauvegarde) {
+      return "";
+    }
+    try {
+      const donnees = JSON.parse(sauvegarde);
+      if (donnees && donnees.date === dateDuJour) {
+        return donnees.proposition || "";
+      }
+    } catch {
+      // Si la sauvegarde est illisible, on commence une nouvelle partie
+    }
+    return "";
+  });
+
   // enChargement : bloque les saisies pendant l'appel API
   const [enChargement, setEnChargement] = useState(false);
-  // message : affiche un avis au joueur (mot refuse, dictionnaire indisponible...)
+  // message : affiche un avis au joueur (mot refusé, dictionnaire indisponible...)
   const [message, setMessage] = useState("");
-  // ligneRefusee : declenche l'animation de tremblement si le mot n'est pas dans le dictionnaire
+  // ligneRefusee : déclenche l'animation de tremblement si le mot n'est pas dans le dictionnaire
   const [ligneRefusee, setLigneRefusee] = useState(false);
-  // compteurRefus : change la key de la ligne active pour relancer le tremblement a chaque refus
+  // compteurRefus : change la key de la ligne active pour relancer le tremblement à chaque refus
   const [compteurRefus, setCompteurRefus] = useState(0);
 
-  // Vérifie si la partie est terminée (victoire ou défaite)
+  // tempsDebutPartie : heure de début de la partie (pour calculer le temps de résolution)
+  // on l'initialise dans un effet car Date.now() ne peut pas être appelé pendant le rendu
+  const tempsDebutPartie = useRef(null);
+
+  // tempsRestant : compte à rebours avant le prochain mot du jour (minuit)
+  const [tempsRestant, setTempsRestant] = useState(tempsRestantAvantMinuit());
+
+  // Met à jour le compte à rebours chaque seconde
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTempsRestant(tempsRestantAvantMinuit());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // On mémorise l'heure de début de la partie une seule fois
+  useEffect(() => {
+    if (tempsDebutPartie.current === null) {
+      tempsDebutPartie.current = Date.now();
+    }
+  }, []);
+
+  // On mémorise le choix du mode dans le navigateur pour la prochaine visite
+  useEffect(() => {
+    localStorage.setItem("modeDuJour", String(modeDuJour));
+  }, [modeDuJour]);
+
+  // Sauvegarde la partie du jour à chaque changement (lignes ou proposition)
+  useEffect(() => {
+    if (!modeDuJour) return;
+    const donnees = {
+      date: dateDuJour,
+      lignes: lignes,
+      proposition: proposition,
+    };
+    localStorage.setItem("partieDuJour", JSON.stringify(donnees));
+  }, [modeDuJour, dateDuJour, lignes, proposition]);
+
   const finie = partieEstFinie(lignes);
   let gagne = false;
   if (lignes.length > 0) {
@@ -89,7 +181,11 @@ function Partie() {
           const partieGagnee = estGagne(couleurs);
           const pointsObtenus = calculerPoints(nouvellesLignes.length, partieGagnee);
           const pseudo = localStorage.getItem("pseudo") || "Anonyme";
-          enregistrerPartie(pseudo, motMystere, nouvellesLignes.length, pointsObtenus);
+          const tempsSecondes = tempsDebutPartie
+            ? Math.floor((Date.now() - tempsDebutPartie) / 1000)
+            : 0;
+          const modePartie = modeDuJour ? "dujour" : "libre";
+          enregistrerPartie(pseudo, motMystere, nouvellesLignes.length, pointsObtenus, modePartie, tempsSecondes);
         }
       }
       return;
@@ -138,6 +234,45 @@ function Partie() {
     setMotMystere(tirerMotAleatoire(motsSolutions));
   }
 
+  // Génère le texte de partage avec les couleurs (emoji) sans révéler les lettres
+  // Format : Le Mot Mystère DD/MM · X/6 puis les lignes d'emoji
+  function genererTextePartage() {
+    const aujourdhui = new Date();
+    const jour = aujourdhui.getDate().toString().padStart(2, "0");
+    const mois = (aujourdhui.getMonth() + 1).toString().padStart(2, "0");
+    const nombreEssais = lignes.length;
+
+    let texte = "Le Mot Mystère " + jour + "/" + mois + " · " + nombreEssais + "/6\n";
+
+    const emojiParCouleur = {
+      vert: "🟩",
+      jaune: "🟨",
+      gris: "⬛",
+    };
+
+    for (let i = 0; i < lignes.length; i++) {
+      const couleurs = lignes[i].couleurs;
+      let ligneEmoji = "";
+      for (let j = 0; j < couleurs.length; j++) {
+        ligneEmoji = ligneEmoji + emojiParCouleur[couleurs[j]];
+      }
+      texte = texte + ligneEmoji + "\n";
+    }
+
+    return texte;
+  }
+
+  // Copie le texte de partage dans le presse-papiers
+  async function partagerResultat() {
+    const texte = genererTextePartage();
+    try {
+      await navigator.clipboard.writeText(texte);
+      setMessage("Partage copié dans le presse-papiers !");
+    } catch {
+      setMessage("Impossible de copier le partage.");
+    }
+  }
+
   let ecranFin = null;
   if (finie) {
     let texteResultat = "Bravo, tu as trouvé le mot !";
@@ -158,8 +293,15 @@ function Partie() {
           </a>
         </p>
         <p>Points : {points}</p>
-        <button type="button" onClick={rejouer}>
-          Rejouer
+        {modeDuJour ? (
+          <p>Partie du jour déjà terminée. Revenez demain pour un nouveau mot.</p>
+        ) : (
+          <button type="button" onClick={rejouer}>
+            Rejouer
+          </button>
+        )}
+        <button type="button" onClick={partagerResultat}>
+          Partager le résultat
         </button>
         <Link to="/scores">Voir les scores</Link>
         <Link to="/">Accueil</Link>
@@ -171,6 +313,13 @@ function Partie() {
     <main className="page">
       <h1>Le Mot Mystère</h1>
       <Link to="/" className="bouton-retour">Retour à l'accueil</Link>
+
+      {/* Compte à rebours avant le prochain mot du jour (affiché uniquement en mode du jour) */}
+      {modeDuJour && (
+        <p className="compte-a-rebours">
+          Prochain mot dans {tempsRestant.heures}h {tempsRestant.minutes}m {tempsRestant.secondes}s
+        </p>
+      )}
 
       <Grille
         lignesValidees={lignes}

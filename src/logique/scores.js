@@ -21,8 +21,24 @@ export function lireScores() {
   }
 }
 
+// Récupère seulement les parties du mot du jour
+export function lireScoresDuJour() {
+  const tousLesScores = lireScores();
+  return tousLesScores.filter(function (score) {
+    return score.mode === "dujour";
+  });
+}
+
+// Récupère seulement les parties en mode libre
+export function lireScoresGeneraux() {
+  const tousLesScores = lireScores();
+  return tousLesScores.filter(function (score) {
+    return score.mode !== "dujour";
+  });
+}
+
 // Enregistre une nouvelle partie terminée dans le tableau des scores
-export function enregistrerPartie(pseudo, mot, nombreEssais, points) {
+export function enregistrerPartie(pseudo, mot, nombreEssais, points, mode, temps) {
   const scores = lireScores();
   const dateDuJour = new Date().toLocaleDateString("fr-FR");
 
@@ -32,12 +48,14 @@ export function enregistrerPartie(pseudo, mot, nombreEssais, points) {
     essais: nombreEssais,
     points: points,
     date: dateDuJour,
+    mode: mode || "libre",
+    temps: temps || 0,
   };
 
   scores.push(nouvellePartie);
 
   // Tri : par points décroissants, puis par nombre d'essais croissants
-  scores.sort((a, b) => {
+  scores.sort(function (a, b) {
     if (b.points !== a.points) {
       return b.points - a.points;
     }

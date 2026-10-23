@@ -73,18 +73,9 @@ export function enregistrerPartie(pseudo, mot, nombreEssais, points, mode, temps
     temps: temps,
   };
 
+  // On garde toutes les parties : le tri et le top 10 sont faits à l'affichage (Scores.jsx).
   scores.push(nouvellePartie);
-
-  // Trie par points décroissants, puis par nombre d'essais croissants.
-  scores.sort(function (a, b) {
-    if (b.points !== a.points) {
-      return b.points - a.points;
-    }
-    return a.essais - b.essais;
-  });
-
-  const top10 = scores.slice(0, 10);
-  localStorage.setItem(CLE_SCORES, JSON.stringify(top10));
+  localStorage.setItem(CLE_SCORES, JSON.stringify(scores));
 
   mettreAJourStats(points > 0, nombreEssais, points);
 }

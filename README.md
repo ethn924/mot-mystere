@@ -1,5 +1,7 @@
 # Le Mot Mystère
 
+**Site en ligne :** [mot-mystere-theta.vercel.app](https://mot-mystere-theta.vercel.app)
+
 Jeu de lettres en React, projet de cours.
 
 Palier visé : **palier 4 (le mot du jour)**.
@@ -15,7 +17,7 @@ Ethan ([@ethn924](https://github.com/ethn924)). Projet réalisé seul, sans bin�
 | Palier 1 : le jeu | Fait |
 | Palier 2 : le dictionnaire | Fait |
 | Palier 3 : le confort de jeu | Fait |
-| Palier 4 : le mot du jour | En cours (sans tests ni mise en ligne encore) |
+| Palier 4 : le mot du jour | Présenté en cours à l'oral, terminé après l'oral (voir « Fait après l'oral ») |
 | Palier 5 : les variantes | Pas commencé |
 | Palier 6 : les quatre grilles | Pas commencé |
 
@@ -63,7 +65,7 @@ Ethan ([@ethn924](https://github.com/ethn924)). Projet réalisé seul, sans bin�
 - Tableau des scores en deux classements : Mot du Jour (tri par points puis temps) et Général (tri par points puis essais)
 
 Ce qui est prévu pour plus tard (non encore fait) :
-- Les tests automatisés (Vitest, Testing Library)
+- Les tests automatisés (Vitest)
 - Le déploiement sur Vercel
 
 ## Lancer le projet
@@ -81,7 +83,7 @@ npm test
 npm run build
 ```
 
-Uniquement React, React Router et Vite en dépendances de production. Les outils de test (Vitest, Testing Library, jsdom) ont été installés pour anticiper les tests automatisés demandés au palier 4, mais ils ne sont pas encore utilisés.
+Uniquement React, React Router et Vite en dépendances de production. Vitest est la seule bibliothèque ajoutée en plus, pour les tests automatisés demandés au palier 4 (`npm test`).
 
 ## Design et interface
 
@@ -132,5 +134,6 @@ Tout ce qui est au-dessus a été présenté à l'oral. Ce qui suit a été fait
   - Fichier `vercel.json` pour le déploiement.
   - Site en ligne sur Vercel : [mot-mystere-theta.vercel.app](https://mot-mystere-theta.vercel.app) (toutes les pages marchent, même en rafraîchissant).
 - Vérification Wiktionnaire simplifiée : 1 seul appel, qui vérifie que le mot est français.
+- Correction du classement : toutes les parties sont gardées, le top 10 est fait à l'affichage, pour que le classement du mot du jour ne perde plus de parties.
 - Code simplifié et commentaires plus clairs.
 - Doc mise à jour.

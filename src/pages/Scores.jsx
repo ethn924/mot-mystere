@@ -25,6 +25,9 @@ function TableauScores({ titre, scores, trierParTemps }) {
     return a.essais - b.essais;
   });
 
+  // On ne montre que les 10 meilleures parties.
+  const top10 = scoresTries.slice(0, 10);
+
   return (
     <section className="bloc-panneau zone-tableau-scores">
       <h2>{titre}</h2>
@@ -41,7 +44,7 @@ function TableauScores({ titre, scores, trierParTemps }) {
           </tr>
         </thead>
         <tbody>
-          {scoresTries.slice(0, 10).map(function (score, index) {
+          {top10.map(function (score, index) {
             let affichageTemps = "-";
             if (score.temps > 0) {
               const minutes = Math.floor(score.temps / 60);
